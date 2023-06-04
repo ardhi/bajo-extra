@@ -1,0 +1,8 @@
+log:
+  dev:
+    level: debug
+    transport:
+      target: pino-pretty
+      options:
+        colorize: true
+  prod: false
