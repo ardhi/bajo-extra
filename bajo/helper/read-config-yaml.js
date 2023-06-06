@@ -1,4 +1,4 @@
-const yaml = require('js-yaml')
+const yaml = require('./js-yaml')
 
 module.exports = function (file) {
   const { fs } = this.bajo.helper
