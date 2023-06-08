@@ -1,9 +1,7 @@
 log:
-  dev:
-    transport:
-      target: pino-pretty
-      options:
-        colorize: true
-        ignore: 'pid,hostname'
-        translateTime: 'SYS:isoUtcDateTime'
-  prod: false
+  transport:
+    target: pino-pretty
+    options:
+      colorize: true
+      ignore: 'pid,hostname'
+      translateTime: 'SYS:isoUtcDateTime'
