@@ -4,4 +4,3 @@ log:
     options:
       colorize: true
       ignore: 'pid,hostname'
-      translateTime: 'SYS:isoUtcDateTime'
