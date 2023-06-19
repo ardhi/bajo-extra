@@ -1,6 +1,6 @@
-const pino = require('pino')
+import pino from 'pino'
 
-module.exports = async function () {
+export default async function () {
   const { getConfig, logLevels, _, log } = this.bajo.helper
   const config = getConfig()
   const opts = getConfig('bajoExtra').log || {}

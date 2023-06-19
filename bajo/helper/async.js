@@ -1,1 +1,2 @@
-module.exports = require('async')
+import async from 'async'
+export default async

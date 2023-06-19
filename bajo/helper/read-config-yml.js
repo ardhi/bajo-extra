@@ -1,2 +1,2 @@
-const fn = require('./read-config-yaml')
-module.exports = fn
+import handlers from '../extend/read-config-handler.js'
+export default handlers['.yml']

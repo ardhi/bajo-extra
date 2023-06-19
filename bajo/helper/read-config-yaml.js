@@ -1,6 +1,2 @@
-const yaml = require('./js-yaml')
-
-module.exports = function (file) {
-  const { fs } = this.bajo.helper
-  return yaml.load(fs.readFileSync(file, 'utf8'))
-}
+import handlers from '../extend/read-config-handler.js'
+export default handlers['.yaml']

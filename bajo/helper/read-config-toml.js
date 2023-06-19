@@ -1,6 +1,2 @@
-const toml = require('./toml')
-
-module.exports = function (file) {
-  const { fs } = this.bajo.helper
-  return toml.parse(fs.readFileSync(file, 'utf8'))
-}
+import handlers from '../extend/read-config-handler.js'
+export default handlers['.toml']

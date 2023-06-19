@@ -1,5 +1,5 @@
-const yaml = require('js-yaml')
-const toml = require('toml')
+import yaml from 'js-yaml'
+import toml from 'toml'
 
 const yamlHandler = function (file) {
   const { fs } = this.bajo.helper
@@ -11,7 +11,7 @@ const tomlHandler = function (file) {
   return toml.parse(fs.readFileSync(file, 'utf8'))
 }
 
-module.exports = {
+export default {
   '.yaml': yamlHandler,
   '.yml': yamlHandler,
   '.toml': tomlHandler

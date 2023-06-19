@@ -1,1 +1,2 @@
-module.exports = require('js-yaml')
+import jsYaml from 'js-yaml'
+export default jsYaml

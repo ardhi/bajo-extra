@@ -1,1 +1,2 @@
-module.exports = require('toml')
+import toml from 'toml'
+export default toml
