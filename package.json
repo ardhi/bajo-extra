@@ -27,10 +27,6 @@
   "homepage": "https://github.com/ardhi/bajo-extra#readme",
   "dependencies": {
     "async": "^3.2.4",
-    "js-yaml": "^4.1.0",
-    "nanoid": "^4.0.2",
-    "pino": "^8.14.1",
-    "pino-pretty": "^10.0.0",
-    "toml": "^3.0.0"
+    "nanoid": "^4.0.2"
   }
 }
