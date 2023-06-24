@@ -1,4 +1,4 @@
-export default function (pattern, length = 10, returnInstance) {
+export default function ({ pattern, length = 21, returnInstance } = {}) {
   const { _ } = this.bajo.helper
   const { nanoid } = this.bajoExtra.helper
   const { customAlphabet } = nanoid

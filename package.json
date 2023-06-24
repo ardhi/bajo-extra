@@ -27,6 +27,8 @@
   "homepage": "https://github.com/ardhi/bajo-extra#readme",
   "dependencies": {
     "async": "^3.2.4",
-    "nanoid": "^4.0.2"
+    "axios": "^1.4.0",
+    "nanoid": "^4.0.2",
+    "query-string": "^8.1.0"
   }
 }
