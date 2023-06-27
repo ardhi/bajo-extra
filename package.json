@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,6 @@
   "dependencies": {
     "async": "^3.2.4",
     "axios": "^1.4.0",
-    "nanoid": "^4.0.2",
     "query-string": "^8.1.0"
   }
 }
