@@ -28,6 +28,8 @@
   "dependencies": {
     "async": "^3.2.4",
     "axios": "^1.4.0",
-    "query-string": "^8.1.0"
+    "ndjson-csv-xlsx": "^1.1.1",
+    "query-string": "^8.1.0",
+    "scramjet": "^4.36.9"
   }
 }

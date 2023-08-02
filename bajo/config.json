@@ -1,3 +1,16 @@
 {
-  "alias": "x"
+  "alias": "x",
+  "stream": {
+    "export": {
+      "maxBatch": 1000,
+      "stringify": {
+        "open": "[\n",
+        "sep": ",\n",
+        "close": "\n]\n"
+      }
+    },
+    "import": {
+      "maxBatch": 100
+    }
+  }
 }
