@@ -1,15 +1,15 @@
-import { createGzip } from 'zlib'
+import { createGzip, createGunzip } from 'zlib'
 
-function gzipFile (file, deleteOld) {
+function gzip (file, deleteOld, unzip) {
   return new Promise((resolve, reject) => {
     const { importPkg } = this.bajo.helper
     importPkg('fs-extra')
       .then(fs => {
-        const newFile = file + '.gz'
+        const newFile = unzip ? file.slice(0, file.length - 3) : (file + '.gz')
         const reader = fs.createReadStream(file)
         const writer = fs.createWriteStream(newFile)
-        const gzip = createGzip()
-        reader.pipe(gzip).pipe(writer)
+        const method = unzip ? createGunzip() : createGzip()
+        reader.pipe(method).pipe(writer)
         writer.on('error', reject)
         writer.on('finish', err => {
           if (err) return reject(err)
@@ -20,4 +20,4 @@ function gzipFile (file, deleteOld) {
   })
 }
 
-export default gzipFile
+export default gzip

@@ -1,17 +1,17 @@
 import path from 'path'
 import scramjet from 'scramjet'
 import format from 'ndjson-csv-xlsx'
+import { createGunzip } from 'zlib'
+
 const { json, ndjson, csv, xlsx } = format
-
 const { DataStream } = scramjet
-
 const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx']
 
-async function collImport (name, source, { trashOld = true, batch, ignoreParseError = true, useHeader = true } = {}) {
+async function importFrom (source, dest, { trashOld = true, batch, progressFn, useHeader = true } = {}) {
   const { error, importPkg, getConfig } = this.bajo.helper
   if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
   const { getInfo, recordClear, recordCreate } = this.bajoDb.helper
-  await getInfo(name)
+  await getInfo(dest)
   const fs = await importPkg('fs-extra')
   const config = getConfig()
   const cfg = getConfig('bajoExtra')
@@ -23,31 +23,38 @@ async function collImport (name, source, { trashOld = true, batch, ignoreParseEr
     fs.ensureDirSync(path.dirname(file))
   }
   if (!fs.existsSync(file)) throw error('Source file \'%s\' doesn\'t exist', file)
-  const ext = path.extname(file)
+  let ext = path.extname(file)
+  let decompress = false
+  if (ext === '.gz') {
+    ext = path.extname(path.basename(file, '.gz'))
+    decompress = true
+  }
   if (!supportedExt.includes(ext)) throw error('Unsupported format \'%s\'', ext.slice(1))
-  if (trashOld) await recordClear(name)
+  if (trashOld) await recordClear(dest)
   const reader = fs.createReadStream(file)
-  reader.on('error', err => {
-    throw err
-  })
   batch = parseInt(batch) || 100
   if (batch > cfg.stream.import.maxBatch) batch = cfg.stream.import.maxBatch
   if (batch < 0) batch = 1
   let count = 0
-  let stream
-  if (ext === '.json') stream = DataStream.pipeline(reader, json.parse())
-  else if (['.ndjson', '.jsonl'].includes(ext)) stream = DataStream.pipeline(reader, ndjson.parse())
-  else if (ext === '.csv') stream = DataStream.pipeline(reader, csv.parse({ headers: useHeader }))
-  else if (ext === '.xlsx') stream = DataStream.pipeline(reader, xlsx.parse({ header: useHeader }))
+  const pipes = [reader]
+  if (decompress) pipes.push(createGunzip())
+  if (ext === '.json') pipes.push(json.parse())
+  else if (['.ndjson', '.jsonl'].includes(ext)) pipes.push(ndjson.parse())
+  else if (ext === '.csv') pipes.push(csv.parse({ headers: useHeader }))
+  else if (ext === '.xlsx') pipes.push(xlsx.parse({ header: useHeader }))
 
+  const stream = DataStream.pipeline(...pipes)
+  let batchNo = 1
   await stream
     .batch(batch)
     .map(async items => {
       if (items.length === 0) return null
+      if (progressFn) await progressFn.call(this, { batchNo, data: items })
       for (let i = 0; i < items.length; i++) {
         count++
-        await recordCreate(name, items[i])
+        await recordCreate(dest, items[i])
       }
+      batchNo++
       return null
     })
     .run()
@@ -55,4 +62,4 @@ async function collImport (name, source, { trashOld = true, batch, ignoreParseEr
   return { file, count }
 }
 
-export default collImport
+export default importFrom
