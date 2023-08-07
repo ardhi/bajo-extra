@@ -19,7 +19,7 @@ async function importFrom (source, dest, { trashOld = true, batch, progressFn, u
   let file
   if (path.isAbsolute(source)) file = source
   else {
-    file = `${config.dir.data}/import/bajoDb/${source}`
+    file = `${config.dir.data}/plugins/bajoDb/import/${source}`
     fs.ensureDirSync(path.dirname(file))
   }
   if (!fs.existsSync(file)) throw error('Source file \'%s\' doesn\'t exist', file)

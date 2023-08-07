@@ -1,3 +1,5 @@
+import Path from 'path'
+
 function makeProgress (spinner) {
   return async function ({ batchNo, batchTotal, data } = {}) {
     if (batchTotal === 0) return
@@ -42,8 +44,9 @@ async function exportTo (path, args) {
   try {
     const filter = { query }
     const result = await this.bajoExtra.helper.exportTo(repo, dest, { filter, batch, progressFn })
-    spinner.succeed('%d records successfully exported to \'%s\'', result.count, result.file)
+    spinner.succeed('%d records successfully exported to \'%s\'', result.count, Path.resolve(result.file))
   } catch (err) {
+    console.log(err)
     spinner.fatal('Error: %s', err.message)
   }
 }

@@ -10,14 +10,15 @@ const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx']
 
 async function getFile (dest, ensureDir) {
   const { importPkg, getConfig, error } = this.bajo.helper
-  const fs = await importPkg('fs-extra')
+  const [fs, increment] = await importPkg('fs-extra', 'add-filename-increment')
   const config = getConfig()
   let file
   if (path.isAbsolute(dest)) file = dest
   else {
-    file = `${config.dir.data}/export/bajoDb/${dest}`
+    file = `${config.dir.data}/plugins/bajoDb/export/${dest}`
     fs.ensureDirSync(path.dirname(file))
   }
+  file = increment(file, { fs: true })
   const dir = path.dirname(file)
   if (!fs.existsSync(dir)) {
     if (ensureDir) fs.ensureDirSync(dir)
@@ -41,10 +42,11 @@ async function getData ({ source, filter, count, stream, progressFn }) {
     const { data, pages, page } = await recordFind(source, filter, { dataOnly: false })
     if (data.length === 0) break
     cnt += data.length
-    stream.pull(data)
+    await stream.pull(data)
     if (progressFn) await progressFn.call(this, { batchTotal: pages, batchNo: page, data })
     filter.page++
   }
+  await stream.end()
   return cnt
 }
 
@@ -66,6 +68,7 @@ function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, bat
     let ext
     let stream
     let compress
+    let writer
     getInfo(source)
       .then(() => {
         return importPkg('fs-extra')
@@ -78,27 +81,26 @@ function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, bat
         file = res.file
         ext = res.ext
         compress = res.compress
-        const writer = fs.createWriteStream(file)
-        writer.on('error', reject)
+        writer = fs.createWriteStream(file)
+        writer.on('error', err => {
+          reject(err)
+        })
         writer.on('finish', () => {
           resolve({ file, count })
         })
         stream = new DataStream()
         stream = stream.flatMap(items => (items))
-        let cstream
-        if (ext === '.json') cstream = stream.pipe(json.stringify())
-        else if (['.ndjson', '.jsonl'].includes(ext)) cstream = stream.pipe(ndjson.stringify())
-        else if (ext === '.csv') cstream = stream.pipe(csv.stringify({ headers: useHeader }))
-        else if (ext === '.xlsx') cstream = stream.pipe(xlsx.stringify({ header: useHeader }))
-        if (compress) cstream.pipe(createGzip()).pipe(writer)
+        const pipes = []
+        if (ext === '.json') pipes.push(json.stringify())
+        else if (['.ndjson', '.jsonl'].includes(ext)) pipes.push(ndjson.stringify())
+        else if (ext === '.csv') pipes.push(csv.stringify({ headers: useHeader }))
+        else if (ext === '.xlsx') pipes.push(xlsx.stringify({ header: useHeader }))
+        if (compress) pipes.push(createGzip())
+        DataStream.pipeline(stream, ...pipes).pipe(writer)
         return getData.call(this, { source, filter, count, stream, progressFn })
       })
       .then(cnt => {
         count = cnt
-        return stream.end()
-      })
-      .then(() => {
-        resolve({ count, file })
       })
       .catch(reject)
   })

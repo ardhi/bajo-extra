@@ -1,3 +1,5 @@
+import Path from 'path'
+
 function makeProgress (spinner) {
   return async function ({ batchNo, data } = {}) {
     spinner.setText('Batch %d (%d records)', batchNo, data.length)
@@ -39,7 +41,7 @@ async function importFrom (path, args) {
   await start.call(this, connection.name)
   try {
     const result = await this.bajoExtra.helper.importFrom(dest, repo, { batch, progressFn })
-    spinner.succeed('%d records successfully imported from \'%s\'', result.count, result.file)
+    spinner.succeed('%d records successfully imported from \'%s\'', result.count, Path.resolve(result.file))
   } catch (err) {
     spinner.fatal('Error: %s', err.message)
   }
