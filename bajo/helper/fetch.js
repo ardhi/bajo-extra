@@ -7,9 +7,9 @@ async function fetch (url, opts = {}, ext = {}) {
     ext = cloneDeep(opts)
     opts = cloneDeep(url)
   } else opts.url = url
-  opts.params = opts.params || {}
+  opts.params = opts.params ?? {}
   if (!has(ext, 'cacheBuster')) ext.cacheBuster = true
-  if (ext.cacheBuster) opts.params[ext.cacheBusterKey || '_'] = Date.now()
+  if (ext.cacheBuster) opts.params[ext.cacheBusterKey ?? '_'] = Date.now()
   const resp = await axios(opts)
   if (ext.rawResponse) return resp
   return resp.data

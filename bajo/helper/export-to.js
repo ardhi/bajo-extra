@@ -36,7 +36,7 @@ async function getFile (dest, ensureDir) {
 }
 
 async function getData ({ source, filter, count, stream, progressFn }) {
-  let cnt = count || 0
+  let cnt = count ?? 0
   const { recordFind } = this.bajoDb.helper
   for (;;) {
     const { data, pages, page } = await recordFind(source, filter, { dataOnly: false })
@@ -55,7 +55,7 @@ function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, bat
   const cfg = getConfig('bajoExtra')
   if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
   filter.page = 1
-  batch = parseInt(batch) || 500
+  batch = parseInt(batch) ?? 500
   if (batch > cfg.stream.export.maxBatch) batch = cfg.stream.export.maxBatch
   if (batch < 0) batch = 1
   filter.limit = batch

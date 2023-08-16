@@ -32,7 +32,7 @@ async function importFrom (source, dest, { trashOld = true, batch, progressFn, u
   if (!supportedExt.includes(ext)) throw error('Unsupported format \'%s\'', ext.slice(1))
   if (trashOld) await recordClear(dest)
   const reader = fs.createReadStream(file)
-  batch = parseInt(batch) || 100
+  batch = parseInt(batch) ?? 100
   if (batch > cfg.stream.import.maxBatch) batch = cfg.stream.import.maxBatch
   if (batch < 0) batch = 1
   let count = 0
