@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
     "async": "^3.2.4",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.1",
+    "fast-jwt": "^3.2.0",
     "ndjson-csv-xlsx": "^1.1.1",
     "query-string": "^8.1.0",
     "scramjet": "^4.36.9"
