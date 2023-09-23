@@ -9,13 +9,12 @@ const { DataStream } = scramjet
 const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx']
 
 async function getFile (dest, ensureDir) {
-  const { importPkg, getConfig, error } = this.bajo.helper
+  const { importPkg, error, getPluginDataDir } = this.bajo.helper
   const [fs, increment] = await importPkg('fs-extra', 'add-filename-increment')
-  const config = getConfig()
   let file
   if (path.isAbsolute(dest)) file = dest
   else {
-    file = `${config.dir.data}/plugins/bajoDb/export/${dest}`
+    file = `${getPluginDataDir('bajoDb')}/export/${dest}`
     fs.ensureDirSync(path.dirname(file))
   }
   file = increment(file, { fs: true })

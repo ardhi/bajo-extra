@@ -8,18 +8,17 @@ const { DataStream } = scramjet
 const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx']
 
 async function importFrom (source, dest, { trashOld = true, batch, progressFn, useHeader = true } = {}) {
-  const { error, importPkg, getConfig } = this.bajo.helper
+  const { error, importPkg, getConfig, getPluginDataDir } = this.bajo.helper
   if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
   const { getInfo, recordClear, recordCreate } = this.bajoDb.helper
   await getInfo(dest)
   const fs = await importPkg('fs-extra')
-  const config = getConfig()
   const cfg = getConfig('bajoExtra')
 
   let file
   if (path.isAbsolute(source)) file = source
   else {
-    file = `${config.dir.data}/plugins/bajoDb/import/${source}`
+    file = `${getPluginDataDir('bajoDb')}/import/${source}`
     fs.ensureDirSync(path.dirname(file))
   }
   if (!fs.existsSync(file)) throw error('Source file \'%s\' doesn\'t exist', file)
