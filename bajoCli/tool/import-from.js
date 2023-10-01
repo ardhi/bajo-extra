@@ -36,7 +36,7 @@ async function importFrom (path, args) {
   const progressFn = makeProgress.call(this, spinner)
   const cfg = getConfig('bajoDb', { full: true })
   const { batch } = getConfig()
-  const start = await importModule(`${cfg.dir}/bajo/start.js`)
+  const start = await importModule(`${cfg.dir.pkg}/bajo/start.js`)
   const { connection } = await this.bajoDb.helper.getInfo(repo)
   await start.call(this, connection.name)
   try {
