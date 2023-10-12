@@ -15,17 +15,17 @@ async function exportTo (path, args) {
   if (!this.bajoDb) print.fatal('Bajo DB isn\'t loaded')
   const schemas = map(this.bajoDb.schemas, 'name')
   if (isEmpty(schemas)) print.fatal('No schema found!')
-  let [repo, dest, query] = args
-  if (isEmpty(repo)) {
-    repo = await select({
-      message: print.__('Please choose repository:'),
+  let [coll, dest, query] = args
+  if (isEmpty(coll)) {
+    coll = await select({
+      message: print.__('Please choose collection:'),
       choices: map(schemas, s => ({ value: s }))
     })
   }
   if (isEmpty(dest)) {
     dest = await input({
       message: print.__('Please enter destination file:'),
-      default: `${repo}-${dayjs().format('YYYYMMDD')}.ndjson`,
+      default: `${coll}-${dayjs().format('YYYYMMDD')}.ndjson`,
       validate: (item) => !isEmpty(item)
     })
   }
@@ -39,11 +39,11 @@ async function exportTo (path, args) {
   const cfg = getConfig('bajoDb', { full: true })
   const { batch } = getConfig()
   const start = await importModule(`${cfg.dir.pkg}/bajo/start.js`)
-  const { connection } = await this.bajoDb.helper.getInfo(repo)
+  const { connection } = await this.bajoDb.helper.getInfo(coll)
   await start.call(this, connection.name)
   try {
     const filter = { query }
-    const result = await this.bajoExtra.helper.exportTo(repo, dest, { filter, batch, progressFn })
+    const result = await this.bajoExtra.helper.exportTo(coll, dest, { filter, batch, progressFn })
     spinner.succeed('%d records successfully exported to \'%s\'', result.count, Path.resolve(result.file))
   } catch (err) {
     console.log(err)
