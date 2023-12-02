@@ -1,12 +1,19 @@
 async function fetchAndSave ({ source = {}, converter, coll, current = {}, options = {} } = {}) {
-  const { print, setImmediate } = this.bajo.helper
+  const { print, setImmediate, importPkg } = this.bajo.helper
+  const { isEmpty, isFunction } = await importPkg('lodash-es')
   const { fetch } = this.bajoExtra.helper
   const { recordCreate, recordFind, recordUpdate, validationErrorMessage } = this.bajoDb.helper
   const spinner = print.bora('Fetching starts...', { showCounter: true, showDatetime: true }).start()
   const resp = await fetch(source.url, source.options ?? {})
+  if (isEmpty(resp)) spinner.fatal('No result from server, aborted!')
+  if (source.abort) {
+    const aborted = await source.abort.call(this, resp)
+    if (aborted) spinner.fatal(aborted)
+  }
   let count = 0
   spinner.setText('Got %d records, processing...', resp.response.length)
-  for (let r of resp.response) {
+  const iterator = isFunction(source.dataKey) ? await source.dataKey.call(this, resp) : resp[source.dataKey]
+  for (let r of iterator) {
     await setImmediate()
     if (converter) r = await converter.call(this, r, options)
     try {
@@ -20,7 +27,7 @@ async function fetchAndSave ({ source = {}, converter, coll, current = {}, optio
           await recordCreate(current.coll, r)
         }
       }
-      if (options.printCount && (count % options.printCount === 0)) print.succeed('Batch tag %d/%d OK', count, resp.response.length, { showDatetime: true })
+      if (options.printCount && (count % options.printCount === 0)) print.succeed(`[${spinner.getElapsed()}] Batch line %d/%d`, count, resp.response.length, { showDatetime: true })
       else spinner.setText('Record %d/%d...', count, resp.response.length)
       count++
     } catch (err) {
