@@ -19,12 +19,14 @@ async function fetchAndSave ({ source = {}, converter, coll, current = {}, optio
     try {
       await recordCreate(coll, r)
       if (current.coll && current.query) {
-        const recs = await recordFind(current.coll, current.query)
+        const query = await current.query.call(this, r)
+        const recs = await recordFind(current.coll, { query })
+        const rc = current.converter ? await current.converter.call(this, r, options) : r
         if (recs.length > 0) {
           const id = recs[0].id
-          await recordUpdate(current.coll, id, r)
+          await recordUpdate(current.coll, id, rc)
         } else {
-          await recordCreate(current.coll, r)
+          await recordCreate(current.coll, rc)
         }
       }
       if (options.printCount && (count % options.printCount === 0)) print.succeed(`[${spinner.getElapsed()}] Batch line %d/%d`, count, resp.response.length, { showDatetime: true })
