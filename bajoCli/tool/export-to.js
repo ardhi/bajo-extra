@@ -7,14 +7,20 @@ function makeProgress (spinner) {
   }
 }
 
-async function exportTo (path, args) {
+async function exportTo ({ path, args, returnEarly }) {
   const { importPkg, print, dayjs, getConfig, importModule } = this.bajo.helper
   const { isEmpty, map } = await importPkg('lodash-es')
   const [input, select] = await importPkg('bajo-cli:@inquirer/input',
     'bajo-cli:@inquirer/select')
-  if (!this.bajoDb) print.fatal('Bajo DB isn\'t loaded')
+  if (!this.bajoDb) {
+    print.fail('Bajo DB isn\'t loaded', { exit: !returnEarly })
+    if (returnEarly) return
+  }
   const schemas = map(this.bajoDb.schemas, 'name')
-  if (isEmpty(schemas)) print.fatal('No schema found!')
+  if (isEmpty(schemas)) {
+    print.fail('No schema found!', { exit: !returnEarly })
+    if (returnEarly) return
+  }
   let [coll, dest, query] = args
   if (isEmpty(coll)) {
     coll = await select({
@@ -47,7 +53,7 @@ async function exportTo (path, args) {
     spinner.succeed('%d records successfully exported to \'%s\'', result.count, Path.resolve(result.file))
   } catch (err) {
     console.log(err)
-    spinner.fatal('Error: %s', err.message)
+    spinner.fail('Error: %s', err.message, { exit: !returnEarly })
   }
 }
 

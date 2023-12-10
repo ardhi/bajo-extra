@@ -6,14 +6,20 @@ function makeProgress (spinner) {
   }
 }
 
-async function importFrom (path, args) {
+async function importFrom ({ path, args, returnEarly }) {
   const { importPkg, print, importModule, getConfig } = this.bajo.helper
   const { isEmpty, map } = await importPkg('lodash-es')
   const [input, select, confirm] = await importPkg('bajo-cli:@inquirer/input',
     'bajo-cli:@inquirer/select', 'bajo-cli:@inquirer/confirm')
-  if (!this.bajoDb) print.fatal('Bajo DB isn\'t loaded')
+  if (!this.bajoDb) {
+    print.fail('Bajo DB isn\'t loaded', { exit: !returnEarly })
+    if (returnEarly) return
+  }
   const schemas = map(this.bajoDb.schemas, 'name')
-  if (isEmpty(schemas)) print.fatal('No schema found!')
+  if (isEmpty(schemas)) {
+    print.fail('No schema found!', { exit: !returnEarly })
+    if (returnEarly) return
+  }
   let [dest, coll] = args
   if (isEmpty(dest)) {
     dest = await input({
@@ -31,7 +37,10 @@ async function importFrom (path, args) {
     message: print.__('You\'re about to replace ALL records with the new ones. Are you really sure?'),
     default: false
   })
-  if (!answer) print.fatal('Aborted!')
+  if (!answer) {
+    print.fail('Aborted!', { exit: !returnEarly })
+    if (returnEarly) return
+  }
   const spinner = print.bora('Importing...').start()
   const progressFn = makeProgress.call(this, spinner)
   const cfg = getConfig('bajoDb', { full: true })
@@ -43,7 +52,7 @@ async function importFrom (path, args) {
     const result = await this.bajoExtra.helper.importFrom(dest, coll, { batch, progressFn })
     spinner.succeed('%d records successfully imported from \'%s\'', result.count, Path.resolve(result.file))
   } catch (err) {
-    spinner.fatal('Error: %s', err.message)
+    spinner.fail('Error: %s', err.message, { exit: !returnEarly })
   }
 }
 
