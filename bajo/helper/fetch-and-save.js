@@ -3,7 +3,8 @@ async function fetchAndSave ({ source = {}, converter, coll, current = {}, optio
   const { isEmpty, isFunction } = await importPkg('lodash-es')
   const { fetch } = this.bajoExtra.helper
   const { recordCreate, recordFind, recordUpdate, validationErrorMessage } = this.bajoDb.helper
-  const spinner = print.bora('Fetching starts...', { showCounter: true, showDatetime: true }).start()
+  const opts = { type: options.showSpinner ? 'bora' : 'log', pkg: options.pkg }
+  const spinner = print.bora('Fetching starts...', { showCounter: true, showDatetime: true, isEnabled: !options.returnEarly }).start()
   const resp = await fetch(source.url, source.options ?? {})
   if (isEmpty(resp)) spinner.fatal('No result from server, aborted!')
   if (source.abort) {
@@ -29,7 +30,7 @@ async function fetchAndSave ({ source = {}, converter, coll, current = {}, optio
           await recordCreate(current.coll, rc)
         }
       }
-      if (options.printCount && (count % options.printCount === 0)) print.succeed(`[${spinner.getElapsed()}] Batch line %d/%d`, count, resp.response.length, { showDatetime: true })
+      if (options.printCount && (count % options.printCount === 0)) print.succeed(`[${spinner.getElapsed()}] Batch line %d/%d`, count, resp.response.length, opts)
       else spinner.setText('Record %d/%d...', count, resp.response.length)
       count++
     } catch (err) {
