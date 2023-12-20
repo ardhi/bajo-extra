@@ -1,10 +1,13 @@
 async function fetchAndSave ({ source = {}, converter, coll, current = {}, options = {} } = {}) {
-  const { print, setImmediate, importPkg } = this.bajo.helper
+  const { print, setImmediate, importPkg, getConfig } = this.bajo.helper
   const { isEmpty, isFunction } = await importPkg('lodash-es')
   const { fetch } = this.bajoExtra.helper
   const { recordCreate, recordFind, recordUpdate, validationErrorMessage } = this.bajoDb.helper
-  const opts = { type: options.showSpinner ? 'bora' : 'log', pkg: options.pkg }
-  const spinner = print.bora('Fetching starts...', { showCounter: true, showDatetime: true, isEnabled: !options.returnEarly }).start()
+  const config = getConfig()
+  const opts = { type: options.returnEarly ? 'log' : 'bora', pkg: options.pkg }
+  const showDatetime = !config.tool
+  const spinner = print.bora('Fetching starts...', { showCounter: true, showDatetime, isSilent: options.returnEarly }).start()
+  if (options.returnEarly) print.succeed('Fetching starts...', opts)
   const resp = await fetch(source.url, source.options ?? {})
   if (isEmpty(resp)) spinner.fatal('No result from server, aborted!')
   if (source.abort) {
@@ -12,34 +15,38 @@ async function fetchAndSave ({ source = {}, converter, coll, current = {}, optio
     if (aborted) spinner.fatal(aborted)
   }
   let count = 0
-  spinner.setText('Got %d records, processing...', resp.response.length)
-  const iterator = isFunction(source.dataKey) ? await source.dataKey.call(this, resp) : resp[source.dataKey]
+  const iterator = isFunction(source.iterator) ? await source.iterator.call(this, resp) : resp[source.iterator]
+  spinner.setText('Got %d records, processing...', iterator.length)
   for (let r of iterator) {
     await setImmediate()
     if (converter) r = await converter.call(this, r, options)
+    if (isEmpty(r)) continue
     try {
       await recordCreate(coll, r)
       if (current.coll && current.query) {
         const query = await current.query.call(this, r)
-        const recs = await recordFind(current.coll, { query })
+        const recs = await recordFind(current.coll, { query }, { skipCache: true })
         const rc = current.converter ? await current.converter.call(this, r, options) : r
-        if (recs.length > 0) {
-          const id = recs[0].id
-          await recordUpdate(current.coll, id, rc)
-        } else {
-          await recordCreate(current.coll, rc)
+        if (rc) {
+          if (recs.length > 0) {
+            const id = recs[0].id
+            await recordUpdate(current.coll, id, rc)
+          } else {
+            await recordCreate(current.coll, rc)
+          }
         }
       }
-      if (options.printCount && (count % options.printCount === 0)) print.succeed(`[${spinner.getElapsed()}] Batch line %d/%d`, count, resp.response.length, opts)
-      else spinner.setText('Record %d/%d...', count, resp.response.length)
+      if (options.printCount && (count % options.printCount === 0)) print.succeed(`[${spinner.getElapsed()}] Batch line %d/%d`, count, iterator.length, opts)
+      else spinner.setText('Record %d/%d...', count, iterator.length)
       count++
     } catch (err) {
       console.log(err)
       spinner.setText(validationErrorMessage(err) + ', continue')
     }
   }
-  spinner.info(`${count}/${resp.response.length} records processed`)
-  spinner.succeed('Done!')
+  spinner.info(`${count}/${iterator.length} records processed`)
+  if (options.returnEarly) print.info(`${count}/${iterator.length} records processed`, opts)
+  else spinner.succeed('Done!')
 }
 
 export default fetchAndSave
