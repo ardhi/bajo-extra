@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,7 @@
     "email-addresses": "^5.0.0",
     "fast-jwt": "^3.2.0",
     "fast-xml-parser": "^4.3.2",
+    "littlehash": "^1.0.1",
     "ndjson-csv-xlsx": "^1.1.1",
     "performant-array-to-tree": "^1.11.0",
     "query-string": "^8.1.0",
