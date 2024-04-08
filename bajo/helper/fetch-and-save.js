@@ -16,14 +16,24 @@ async function handler (rec, bulk) {
   if (existing) {
     if (save.mode === 'upsert') {
       const body = save.updateConverter ? await save.updateConverter.call(this, rec, save) : rec
-      record = await recordUpdate(save.coll, existing.id, body)
-      method = 'updated'
+      try {
+        record = await recordUpdate(save.coll, existing.id, body)
+        method = 'updated'
+      } catch (err) {
+        console.error(err)
+        method = 'error'
+      }
     } else {
       method = 'skipped'
     }
   } else {
-    record = await recordCreate(save.coll, rec)
-    method = 'created'
+    try {
+      record = await recordCreate(save.coll, rec)
+      method = 'created'
+    } catch (err) {
+      console.error(err)
+      method = 'error'
+    }
   }
   if (record && current.coll && current.query) {
     const query = await current.query.call(this, { body: rec, record, opts: save })
@@ -42,10 +52,14 @@ async function handler (rec, bulk) {
 }
 
 async function fetchAndSave ({ url, bulk, save = {}, opts = {} } = {}) {
-  const { importPkg } = this.bajo.helper
+  const { importPkg, getConfig, importModule } = this.bajo.helper
   const { fetchBulk } = this.bajoExtra.helper
   const { merge } = await importPkg('lodash-es')
   merge(bulk, { handler, save })
+  const cfgDb = getConfig('bajoDb', { full: true })
+  const start = await importModule(`${cfgDb.dir.pkg}/bajo/start.js`)
+  await start.call(this, 'all')
+
   await fetchBulk(url, bulk, opts)
 }
 

@@ -18,6 +18,7 @@ async function fetching ({ url, opts, bulk, spin }) {
   let count = 0
   const stat = { created: 0, updated: 0, skipped: 0, error: 0 }
   bulk.dataKey = bulk.dataKey ?? 'data'
+  if (bulk.printCount === true) bulk.printCount = 100
   const data = isFunction(bulk.dataKey) ? await bulk.dataKey.call(this, resp) : resp[bulk.dataKey]
   if (data.length === 0) {
     print.warn('No records to process, abort')
@@ -43,7 +44,7 @@ async function fetching ({ url, opts, bulk, spin }) {
     }
   }
   print.succeed('[%s] %d/%d records processed', spin.getElapsed(), count, data.length)
-  print.succeed('[%s] Created: %d, Updated: %d, Skipped: %d', spin.getElapsed(), stat.created, stat.updated, stat.skipped)
+  if (!bulk.noStat) print.succeed('[%s] Created: %d, Updated: %d, Skipped: %d', spin.getElapsed(), stat.created, stat.updated, stat.skipped)
   return data.length
 }
 
@@ -53,7 +54,7 @@ async function fetchBulk (url, bulk = {}, opts = {}) {
   opts.params = opts.params ?? {}
   bulk.maxStep = bulk.maxStep ?? 0
   if (!isFunction(bulk.handler)) throw error('A function handler must be provided')
-  if (bulk.paramsIncFn && isFunction(bulk.ParamsFn)) {
+  if (isFunction(bulk.paramsIncFn)) {
     print.info('Bulk fetch starting')
     const spin = spinner({ showCounter: true }).start('Fetching starts...')
     let step = 1

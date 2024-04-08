@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
