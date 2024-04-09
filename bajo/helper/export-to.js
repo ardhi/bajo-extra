@@ -1,6 +1,6 @@
 import path from 'path'
 import scramjet from 'scramjet'
-import format from 'ndjson-csv-xlsx'
+import format from '../../lib/ndjson-csv-xlsx.js'
 import { createGzip } from 'zlib'
 
 const { json, ndjson, csv, xlsx } = format
@@ -14,7 +14,7 @@ async function getFile (dest, ensureDir) {
   let file
   if (path.isAbsolute(dest)) file = dest
   else {
-    file = `${getPluginDataDir('bajoDb')}/export/${dest}`
+    file = `${getPluginDataDir('bajoExtra')}/export/${dest}`
     fs.ensureDirSync(path.dirname(file))
   }
   file = increment(file, { fs: true })

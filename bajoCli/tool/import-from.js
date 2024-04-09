@@ -33,7 +33,7 @@ async function importFrom ({ path, args }) {
     default: false
   })
   if (!answer) return print.fail('Aborted!', { exit: config.tool })
-  const spin = spinner().start('Importing...')
+  const spin = spinner({ showCounter: true }).start('Importing...')
   const progressFn = makeProgress.call(this, spin)
   const cfg = getConfig('bajoDb', { full: true })
   const { batch } = getConfig()

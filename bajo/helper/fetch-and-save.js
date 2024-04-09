@@ -10,7 +10,7 @@ async function handler (rec, bulk) {
   save.checkUnique = save.checkUnique ?? 'id'
   if (['unique', 'upsert'].includes(save.mode)) {
     const query = isFunction(save.checkUnique) ? await save.checkUnique.call(this, rec, save) : set({}, save.checkUnique, rec[save.checkUnique])
-    const resp = await recordFind(save.coll, { query, limit: 1 }, { skipCache: true })
+    const resp = await recordFind(save.coll, { query, limit: 1 }, { noCache: true })
     if (resp.length > 0) existing = resp[0]
   }
   if (existing) {
@@ -37,7 +37,7 @@ async function handler (rec, bulk) {
   }
   if (record && current.coll && current.query) {
     const query = await current.query.call(this, { body: rec, record, opts: save })
-    const recs = await recordFind(current.coll, { query }, { skipCache: true })
+    const recs = await recordFind(current.coll, { query }, { noCache: true })
     const rc = current.converter ? await current.converter.call(this, { body: rec, record, opts: save }) : rec
     if (rc) {
       if (recs.length > 0) {
