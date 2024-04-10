@@ -6,7 +6,7 @@ import { createGzip } from 'zlib'
 const { json, ndjson, csv, xlsx } = format
 const { DataStream } = scramjet
 
-const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx']
+const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx', '.tsv']
 
 async function getFile (dest, ensureDir) {
   const { importPkg, error, getPluginDataDir } = this.bajo.helper
@@ -38,18 +38,19 @@ async function getData ({ source, filter, count, stream, progressFn }) {
   let cnt = count ?? 0
   const { recordFind } = this.bajoDb.helper
   for (;;) {
-    const { data, pages, page } = await recordFind(source, filter, { dataOnly: false })
+    const batchStart = new Date()
+    const { data, page } = await recordFind(source, filter, { dataOnly: false })
     if (data.length === 0) break
     cnt += data.length
     await stream.pull(data)
-    if (progressFn) await progressFn.call(this, { batchTotal: pages, batchNo: page, data })
+    if (progressFn) await progressFn.call(this, { batchNo: page, data, batchStart, batchEnd: new Date() })
     filter.page++
   }
   await stream.end()
   return cnt
 }
 
-function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, batch = 500, progressFn } = {}) {
+function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, batch = 500, progressFn } = {}, opts = {}) {
   const { error, importPkg, getConfig } = this.bajo.helper
   const cfg = getConfig('bajoExtra')
   if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
@@ -63,6 +64,7 @@ function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, bat
     const { getInfo } = this.bajoDb.helper
     let count = 0
     let fs
+    let merge
     let file
     let ext
     let stream
@@ -70,6 +72,10 @@ function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, bat
     let writer
     getInfo(source)
       .then(() => {
+        return importPkg('lodash-es')
+      })
+      .then(l => {
+        merge = l.merge
         return importPkg('fs-extra')
       })
       .then(res => {
@@ -90,10 +96,11 @@ function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, bat
         stream = new DataStream()
         stream = stream.flatMap(items => (items))
         const pipes = []
-        if (ext === '.json') pipes.push(json.stringify())
-        else if (['.ndjson', '.jsonl'].includes(ext)) pipes.push(ndjson.stringify())
-        else if (ext === '.csv') pipes.push(csv.stringify({ headers: useHeader }))
-        else if (ext === '.xlsx') pipes.push(xlsx.stringify({ header: useHeader }))
+        if (ext === '.json') pipes.push(json.stringify(opts))
+        else if (['.ndjson', '.jsonl'].includes(ext)) pipes.push(ndjson.stringify(opts))
+        else if (ext === '.csv') pipes.push(csv.stringify(merge({}, { headers: useHeader }, opts)))
+        else if (ext === '.tsv') pipes.push(csv.stringify(merge({}, { headers: useHeader }, merge({}, opts, { delimiter: '\t' }))))
+        else if (ext === '.xlsx') pipes.push(xlsx.stringify(merge({}, { header: useHeader }, opts)))
         if (compress) pipes.push(createGzip())
         DataStream.pipeline(stream, ...pipes).pipe(writer)
         return getData.call(this, { source, filter, count, stream, progressFn })

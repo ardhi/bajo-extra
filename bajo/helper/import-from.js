@@ -5,10 +5,10 @@ import { createGunzip } from 'zlib'
 
 const { json, ndjson, csv, xlsx } = format
 const { DataStream } = scramjet
-const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx']
+const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx', '.tsv']
 
 async function importFrom (source, dest, { trashOld = true, batch = 1, progressFn, converterFn, useHeader = true, fileType, createOpts = {} } = {}, opts = {}) {
-  const { error, importPkg, getConfig, getPluginDataDir, secToHms } = this.bajo.helper
+  const { error, importPkg, getConfig, getPluginDataDir } = this.bajo.helper
   if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
   const { getInfo, recordClear, recordCreate } = this.bajoDb.helper
   await getInfo(dest)
@@ -40,8 +40,9 @@ async function importFrom (source, dest, { trashOld = true, batch = 1, progressF
   if (decompress) pipes.push(createGunzip())
   if (ext === '.json') pipes.push(json.parse(opts))
   else if (['.ndjson', '.jsonl'].includes(ext)) pipes.push(ndjson.parse(opts))
-  else if (ext === '.csv') pipes.push(csv.parse(merge({ headers: useHeader }, opts)))
-  else if (ext === '.xlsx') pipes.push(xlsx.parse(merge({ header: useHeader }, opts)))
+  else if (ext === '.csv') pipes.push(csv.parse(merge({}, { headers: useHeader }, opts)))
+  else if (ext === '.tsv') pipes.push(csv.parse(merge({}, { headers: useHeader }, merge({}, opts, { delimiter: '\t' }))))
+  else if (ext === '.xlsx') pipes.push(xlsx.parse(merge({}, { header: useHeader }, opts)))
 
   const stream = DataStream.pipeline(...pipes)
   let batchNo = 1
@@ -49,14 +50,13 @@ async function importFrom (source, dest, { trashOld = true, batch = 1, progressF
     .batch(batch)
     .map(async items => {
       if (items.length === 0) return null
-      const start = Date.now()
+      const batchStart = new Date()
       for (let item of items) {
         count++
         item = converterFn ? await converterFn.call(this, item) : item
         await recordCreate(dest, item, createOpts)
       }
-      const diff = Date.now() - start
-      if (progressFn) await progressFn.call(this, { batchNo, data: items, time: secToHms(diff, true), timeMsec: diff })
+      if (progressFn) await progressFn.call(this, { batchNo, data: items, batchStart, batchEnd: new Date() })
       batchNo++
     })
     .run()

@@ -1,8 +1,11 @@
 import Path from 'path'
 
+const batch = 100
+
 function makeProgress (spin) {
-  return async function ({ batchNo, data } = {}) {
-    spin.setText('Batch %d (%d records)', batchNo, data.length)
+  const { secToHms } = this.bajo.helper
+  return async function ({ batchNo, data, batchStart, batchEnd } = {}) {
+    spin.setText('Batch #%d (%s)', batchNo, secToHms(batchEnd.toTime() - batchStart.toTime(), true))
   }
 }
 
@@ -36,7 +39,6 @@ async function importFrom ({ path, args }) {
   const spin = spinner({ showCounter: true }).start('Importing...')
   const progressFn = makeProgress.call(this, spin)
   const cfg = getConfig('bajoDb', { full: true })
-  const { batch } = getConfig()
   const start = await importModule(`${cfg.dir.pkg}/bajo/start.js`)
   const { connection } = await this.bajoDb.helper.getInfo(coll)
   await start.call(this, connection.name)
