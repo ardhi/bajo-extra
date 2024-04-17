@@ -9,9 +9,10 @@ const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx', '.tsv']
 
 async function importFrom (source, dest, { trashOld = true, batch = 1, progressFn, converterFn, useHeader = true, fileType, createOpts = {} } = {}, opts = {}) {
   const { error, importPkg, getConfig, getPluginDataDir } = this.bajo.helper
-  if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
-  const { getInfo, recordClear, recordCreate } = this.bajoDb.helper
-  await getInfo(dest)
+  if (dest !== false) {
+    if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
+    await this.bajoDb.helper.getInfo(dest)
+  }
   const { merge } = await importPkg('lodash-es')
   const fs = await importPkg('fs-extra')
   const cfg = getConfig('bajoExtra')
@@ -30,7 +31,7 @@ async function importFrom (source, dest, { trashOld = true, batch = 1, progressF
     decompress = true
   }
   if (!supportedExt.includes(ext)) throw error('Unsupported format \'%s\'', ext.slice(1))
-  if (trashOld) await recordClear(dest)
+  if (trashOld && dest !== false) await this.bajoDb.helper.recordClear(dest)
   const reader = fs.createReadStream(file)
   batch = parseInt(batch) || 100
   if (batch > cfg.stream.import.maxBatch) batch = cfg.stream.import.maxBatch
@@ -46,6 +47,7 @@ async function importFrom (source, dest, { trashOld = true, batch = 1, progressF
 
   const stream = DataStream.pipeline(...pipes)
   let batchNo = 1
+  const data = []
   await stream
     .batch(batch)
     .map(async items => {
@@ -54,14 +56,15 @@ async function importFrom (source, dest, { trashOld = true, batch = 1, progressF
       for (let item of items) {
         count++
         item = converterFn ? await converterFn.call(this, item) : item
-        await recordCreate(dest, item, createOpts)
+        if (dest !== false) await this.bajoDb.helper.recordCreate(dest, item, createOpts)
+        else data.push(item)
       }
       if (progressFn) await progressFn.call(this, { batchNo, data: items, batchStart, batchEnd: new Date() })
       batchNo++
     })
     .run()
 
-  return { file, count }
+  return dest === false ? data : { file, count }
 }
 
 export default importFrom
