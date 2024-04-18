@@ -1,6 +1,5 @@
 async function handler (rec, bulk) {
-  const { importPkg } = this.bajo.helper
-  const { isFunction, set } = await importPkg('lodash-es')
+  const { isFunction, set } = this.bajo.helper._
   const { recordCreate, recordFind, recordUpdate } = this.bajoDb.helper
   const save = bulk.save ?? {}
   const current = save.current ?? {}
@@ -52,9 +51,9 @@ async function handler (rec, bulk) {
 }
 
 async function fetchAndSave ({ url, bulk, save = {}, opts = {} } = {}) {
-  const { importPkg, getConfig, importModule } = this.bajo.helper
+  const { getConfig, importModule } = this.bajo.helper
   const { fetchBulk } = this.bajoExtra.helper
-  const { merge } = await importPkg('lodash-es')
+  const { merge } = this.bajo.helper._
   merge(bulk, { handler, save })
   const cfgDb = getConfig('bajoDb', { full: true })
   const start = await importModule(`${cfgDb.dir.pkg}/bajo/start.js`)

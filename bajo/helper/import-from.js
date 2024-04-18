@@ -8,13 +8,12 @@ const { DataStream } = scramjet
 const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx', '.tsv']
 
 async function importFrom (source, dest, { trashOld = true, batch = 1, progressFn, converterFn, useHeader = true, fileType, createOpts = {} } = {}, opts = {}) {
-  const { error, importPkg, getConfig, getPluginDataDir } = this.bajo.helper
+  const { fs, error, getConfig, getPluginDataDir } = this.bajo.helper
   if (dest !== false) {
     if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
     await this.bajoDb.helper.getInfo(dest)
   }
-  const { merge } = await importPkg('lodash-es')
-  const fs = await importPkg('fs-extra')
+  const { merge } = this.bajo.helper._
   const cfg = getConfig('bajoExtra')
 
   let file

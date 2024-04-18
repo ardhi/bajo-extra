@@ -12,8 +12,8 @@ function makeProgress (spin) {
 
 async function exportTo ({ path, args }) {
   const { importPkg, print, dayjs, getConfig, importModule, spinner } = this.bajo.helper
-  const { isEmpty, map } = await importPkg('lodash-es')
-  const [input, select] = await importPkg('bajo-cli:@inquirer/input',
+  const { isEmpty, map } = this.bajo.helper._
+  const [input, select] = await importPkg('bajoCli:@inquirer/input',
     'bajo-cli:@inquirer/select')
   const config = getConfig()
   if (!this.bajoDb) return print.fail('Bajo DB isn\'t loaded', { exit: config.tool })

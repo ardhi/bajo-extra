@@ -9,8 +9,8 @@ const { DataStream } = scramjet
 const supportedExt = ['.json', '.jsonl', '.ndjson', '.csv', '.xlsx', '.tsv']
 
 async function getFile (dest, ensureDir) {
-  const { importPkg, error, getPluginDataDir } = this.bajo.helper
-  const [fs, increment] = await importPkg('fs-extra', 'add-filename-increment')
+  const { fs, importPkg, error, getPluginDataDir } = this.bajo.helper
+  const increment = await importPkg('add-filename-increment')
   let file
   if (path.isAbsolute(dest)) file = dest
   else {
@@ -51,7 +51,7 @@ async function getData ({ source, filter, count, stream, progressFn }) {
 }
 
 function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, batch = 500, progressFn } = {}, opts = {}) {
-  const { error, importPkg, getConfig } = this.bajo.helper
+  const { fs, error, getConfig } = this.bajo.helper
   const cfg = getConfig('bajoExtra')
   if (!this.bajoDb) throw error('Bajo DB isn\'t loaded')
   filter.page = 1
@@ -59,27 +59,18 @@ function exportTo (source, dest, { filter = {}, ensureDir, useHeader = true, bat
   if (batch > cfg.stream.export.maxBatch) batch = cfg.stream.export.maxBatch
   if (batch < 0) batch = 1
   filter.limit = batch
+  const { merge } = this.bajo.helper._
 
   return new Promise((resolve, reject) => {
     const { getInfo } = this.bajoDb.helper
     let count = 0
-    let fs
-    let merge
     let file
     let ext
     let stream
     let compress
     let writer
     getInfo(source)
-      .then(() => {
-        return importPkg('lodash-es')
-      })
-      .then(l => {
-        merge = l.merge
-        return importPkg('fs-extra')
-      })
       .then(res => {
-        fs = res
         return getFile.call(this, dest, ensureDir)
       })
       .then(res => {

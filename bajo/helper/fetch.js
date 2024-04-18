@@ -3,8 +3,8 @@ import http from 'http'
 import https from 'https'
 
 async function fetch (url, opts = {}, ext = {}) {
-  const { importPkg, getConfig } = this.bajo.helper
-  const { has, isPlainObject, cloneDeep, isEmpty } = await importPkg('lodash-es')
+  const { getConfig } = this.bajo.helper
+  const { has, isPlainObject, cloneDeep, isEmpty } = this.bajo.helper._
   const cfg = getConfig('bajoExtra')
   if (isPlainObject(url)) {
     ext = cloneDeep(opts)

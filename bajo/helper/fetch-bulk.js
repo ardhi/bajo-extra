@@ -1,6 +1,6 @@
 async function fetching ({ url, opts, bulk, spin }) {
-  const { setImmediate, importPkg, print } = this.bajo.helper
-  const { isEmpty, isFunction, has } = await importPkg('lodash-es')
+  const { setImmediate, print } = this.bajo.helper
+  const { isEmpty, isFunction, has } = this.bajo.helper._
   const { validationErrorMessage } = this.bajoDb.helper
   const { fetch } = this.bajoExtra.helper
   const resp = await fetch(url, opts ?? {})
@@ -49,8 +49,8 @@ async function fetching ({ url, opts, bulk, spin }) {
 }
 
 async function fetchBulk (url, bulk = {}, opts = {}) {
-  const { print, spinner, importPkg, error } = this.bajo.helper
-  const { isFunction } = await importPkg('lodash-es')
+  const { print, spinner, error } = this.bajo.helper
+  const { isFunction } = this.bajo.helper._
   opts.params = opts.params ?? {}
   bulk.maxStep = bulk.maxStep ?? 0
   if (!isFunction(bulk.handler)) throw error('A function handler must be provided')

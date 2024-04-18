@@ -11,9 +11,9 @@ function makeProgress (spin) {
 
 async function importFrom ({ path, args }) {
   const { importPkg, print, importModule, getConfig, spinner } = this.bajo.helper
-  const { isEmpty, map } = await importPkg('lodash-es')
-  const [input, select, confirm] = await importPkg('bajo-cli:@inquirer/input',
-    'bajo-cli:@inquirer/select', 'bajo-cli:@inquirer/confirm')
+  const { isEmpty, map } = this.bajo.helper._
+  const [input, select, confirm] = await importPkg('bajoCli:@inquirer/input',
+    'bajoCli:@inquirer/select', 'bajoCli:@inquirer/confirm')
   const config = getConfig()
   if (!this.bajoDb) return print.fail('Bajo DB isn\'t loaded', { exit: config.tool })
   const schemas = map(this.bajoDb.schemas, 'name')

@@ -1,11 +1,11 @@
 import path from 'path'
 
 async function download (url, opts = {}) {
-  const { getPluginDataDir, importPkg, error, generateId } = this.bajo.helper
+  const { fs, getPluginDataDir, importPkg, error, generateId } = this.bajo.helper
   const { fetch, formatByte, formatPercentage } = this.bajoExtra.helper
-  const { isFunction } = await importPkg('lodash-es')
+  const { isFunction } = this.bajo.helper._
   if (typeof opts === 'string') opts = { dir: opts }
-  const [fs, increment] = await importPkg('fs-extra', 'add-filename-increment')
+  const increment = await importPkg('add-filename-increment')
   if (!opts.dir) {
     opts.dir = `${getPluginDataDir('bajoExtra')}/download`
     fs.ensureDirSync(opts.dir)
