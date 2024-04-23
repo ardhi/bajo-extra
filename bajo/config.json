@@ -2,18 +2,5 @@
   "alias": "x",
   "fetch": {
     "agent": {}
-  },
-  "stream": {
-    "export": {
-      "maxBatch": 1000,
-      "stringify": {
-        "open": "[\n",
-        "sep": ",\n",
-        "close": "\n]\n"
-      }
-    },
-    "import": {
-      "maxBatch": 1000
-    }
   }
 }

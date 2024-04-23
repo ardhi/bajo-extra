@@ -51,13 +51,11 @@ async function handler (rec, bulk) {
 }
 
 async function fetchAndSave ({ url, bulk, save = {}, opts = {} } = {}) {
-  const { getConfig, importModule } = this.bajo.helper
+  const { startPlugin } = this.bajo.helper
   const { fetchBulk } = this.bajoExtra.helper
   const { merge } = this.bajo.helper._
   merge(bulk, { handler, save })
-  const cfgDb = getConfig('bajoDb', { full: true })
-  const start = await importModule(`${cfgDb.dir.pkg}/bajo/start.js`)
-  await start.call(this, 'all')
+  await startPlugin('bajoDb')
 
   await fetchBulk(url, bulk, opts)
 }

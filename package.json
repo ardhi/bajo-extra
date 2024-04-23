@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -26,21 +26,13 @@
   },
   "homepage": "https://github.com/ardhi/bajo-extra#readme",
   "dependencies": {
-    "@atomictech/xlsx-write-stream": "^2.0.2",
     "async": "^3.2.4",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.1",
     "email-addresses": "^5.0.0",
-    "fast-csv": "^5.0.1",
-    "fast-jwt": "^3.2.0",
-    "fast-xml-parser": "^4.3.2",
-    "ndjson": "^2.0.0",
+    "fast-xml-parser": "^4.3.6",
     "numbro": "^2.5.0",
     "performant-array-to-tree": "^1.11.0",
-    "query-string": "^8.1.0",
-    "scramjet": "^4.36.9",
-    "stream-chain": "^2.2.5",
-    "stream-json": "^1.8.0",
-    "xlsx-parse-stream": "^1.1.0"
+    "query-string": "^8.1.0"
   }
 }
