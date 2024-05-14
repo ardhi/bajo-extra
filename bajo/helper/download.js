@@ -1,35 +1,36 @@
 import path from 'path'
+import { Readable } from 'node:stream'
 
-async function download (url, opts = {}) {
+async function download (url, opts = {}, extra = {}) {
   const { fs, getPluginDataDir, importPkg, error, generateId } = this.bajo.helper
   const { fetch, formatByte, formatPercentage } = this.bajoExtra.helper
-  const { isFunction } = this.bajo.helper._
-  if (typeof opts === 'string') opts = { dir: opts }
+  const { isFunction, merge } = this.bajo.helper._
+  if (typeof opts === 'string') extra = { dir: opts }
   const increment = await importPkg('add-filename-increment')
-  if (!opts.dir) {
-    opts.dir = `${getPluginDataDir('bajoExtra')}/download`
-    fs.ensureDirSync(opts.dir)
+  if (!extra.dir) {
+    extra.dir = `${getPluginDataDir('bajoExtra')}/download`
+    fs.ensureDirSync(extra.dir)
   }
-  const fetchOpts = opts.fetchOpts ?? {}
-  if (!fs.existsSync(opts.dir)) throw error('Download dir \'%s\' doesn\'t exists', opts.dir)
-  if (opts.randomFileName) {
+  if (!fs.existsSync(extra.dir)) throw error('Download dir \'%s\' doesn\'t exists', extra.dir)
+  if (extra.randomFileName) {
     const ext = path.extname(url)
-    opts.fileName = `${generateId()}${ext}`
+    extra.fileName = `${generateId()}${ext}`
   }
-  if (!opts.fileName) opts.fileName = path.basename(url)
-  const file = path.resolve(increment(`${opts.dir}/${opts.fileName}`, { fs: true }))
+  if (!extra.fileName) extra.fileName = path.basename(url)
+  const file = path.resolve(increment(`${extra.dir}/${extra.fileName}`, { fs: true }))
   const writer = fs.createWriteStream(file)
-  fetchOpts.responseType = 'stream'
-  const { headers, data } = await fetch(url, fetchOpts, { rawResponse: true })
+  const { headers, body, ok, status } = await fetch(url, opts, merge({}, extra, { rawResponse: true }))
+  if (!ok) throw error('Getting %s status', status)
   const total = headers['content-length'] ?? 0
+  const data = Readable.fromWeb(body)
   let length = 0
   data.on('data', chunk => {
     length += chunk.length
-    if (isFunction(opts.progressFn)) opts.progressFn.call(this, length, total)
-    else if (opts.spin) {
-      opts.spinText = opts.spinText ?? 'Downloading...'
-      if (total === 0) opts.spin.setText(`${opts.spinText} %s`, formatByte(length))
-      else opts.spin.setText(`${opts.spinText} %s of %s (%s)`, formatByte(length), formatByte(total), formatPercentage(length / total))
+    if (isFunction(extra.progressFn)) extra.progressFn.call(this, length, total)
+    else if (extra.spin) {
+      extra.spinText = extra.spinText ?? 'Downloading...'
+      if (total === 0) extra.spin.setText(`${extra.spinText} %s`, formatByte(length))
+      else extra.spin.setText(`${extra.spinText} %s of %s (%s)`, formatByte(length), formatByte(total), formatPercentage(length / total))
     }
   })
   data.pipe(writer)

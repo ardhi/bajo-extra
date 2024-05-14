@@ -7,7 +7,7 @@ async function download ({ path, args }) {
 
   let dest
   try {
-    dest = await download(url, { spin, spinText })
+    dest = await download(url, null, { spin, spinText })
   } catch (err) {
     spin.fatal('Error: %s', err.message)
   }

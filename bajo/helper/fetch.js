@@ -1,25 +1,46 @@
-import axios from 'axios'
-import http from 'http'
-import https from 'https'
+import path from 'path'
+import { fetch, Agent } from 'undici'
 
-async function fetch (url, opts = {}, ext = {}) {
-  const { getConfig } = this.bajo.helper
-  const { has, isPlainObject, cloneDeep, isEmpty } = this.bajo.helper._
+async function fetchUrl (url, opts = {}, extra = {}) {
+  const { getConfig, isSet, fs } = this.bajo.helper
+  const { has, isArray, isPlainObject, isString, cloneDeep, isEmpty, merge } = this.bajo.helper._
   const cfg = getConfig('bajoExtra')
   if (isPlainObject(url)) {
-    ext = cloneDeep(opts)
+    extra = cloneDeep(opts)
     opts = cloneDeep(url)
-  } else opts.url = url
-  opts.params = opts.params ?? {}
-  if (!has(ext, 'cacheBuster')) ext.cacheBuster = true
-  if (ext.cacheBuster) opts.params[ext.cacheBusterKey ?? '_'] = Date.now()
-  if (!isEmpty(cfg.fetch.agent)) {
-    opts.httpAgent = opts.httpAgent ?? new http.Agent(cfg.fetch.agent)
-    opts.httpsAgent = opts.httpsAgent ?? new https.Agent(cfg.fetch.agent)
+    url = opts.url
+    delete opts.url
   }
-  const resp = await axios(opts)
-  if (ext.rawResponse) return resp
-  return resp.data
+  if (opts.method) opts.method = opts.method.toUpperCase()
+  if (opts.auth) {
+    opts.headers.Authorization = `Basic ${Buffer.from(`${opts.auth.username}:${opts.auth.password}`).toString('base64')}`
+    delete opts.auth
+  }
+  opts.query = merge({}, opts.query, opts.params ?? {})
+  delete opts.params
+  if (!has(extra, 'cacheBuster')) extra.cacheBuster = true
+  if (extra.cacheBuster) opts.query[extra.cacheBusterKey ?? '_'] = Date.now()
+  if (!isEmpty(cfg.fetch.agent)) {
+    opts.dispatcher = new Agent(cfg.fetch.agent)
+  }
+  if (opts.body && extra.formData) {
+    const formData = new FormData()
+    for (const key in opts.body) {
+      let fname
+      let val = opts.body[key]
+      if (!isSet(val)) continue
+      if (isString(val) && val.startsWith('file:///')) {
+        fname = path.basename(val)
+        val = new Blob([fs.readFileSync(val.slice(8))])
+      } else if (isPlainObject(val) || isArray(val)) val = JSON.stringify(val)
+      if (fname) formData.append(key, val, fname)
+      else formData.append(key, val)
+    }
+    opts.body = formData
+  }
+  const resp = await fetch(url, opts)
+  if (extra.rawResponse) return resp
+  return await resp.json()
 }
 
-export default fetch
+export default fetchUrl
