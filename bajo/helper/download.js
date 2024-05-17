@@ -20,7 +20,10 @@ async function download (url, opts = {}, extra = {}) {
   const file = path.resolve(increment(`${extra.dir}/${extra.fileName}`, { fs: true }))
   const writer = fs.createWriteStream(file)
   const { headers, body, ok, status } = await fetch(url, opts, merge({}, extra, { rawResponse: true }))
-  if (!ok) throw error('Getting %s status', status)
+  if (!ok) {
+    fs.removeSync(file)
+    throw error('Getting %s status', status)
+  }
   const total = headers['content-length'] ?? 0
   const data = Readable.fromWeb(body)
   let length = 0
