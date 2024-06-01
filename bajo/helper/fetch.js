@@ -38,6 +38,11 @@ async function fetchUrl (url, opts = {}, extra = {}) {
     }
     opts.body = formData
   }
+  if (opts.query) {
+    // todo: what if url already contain query string?
+    const query = new URLSearchParams(opts.query)
+    url += '?' + query
+  }
   const resp = await fetch(url, opts)
   if (extra.rawResponse) return resp
   return await resp.json()
