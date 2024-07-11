@@ -2,9 +2,9 @@ import path from 'path'
 import { fetch, Agent } from 'undici'
 
 async function fetchUrl (url, opts = {}, extra = {}) {
-  const { getConfig, isSet, fs } = this.bajo.helper
-  const { has, isArray, isPlainObject, isString, cloneDeep, isEmpty, merge } = this.bajo.helper._
-  const cfg = getConfig('bajoExtra')
+  const { isSet } = this.bajo
+  const { fs } = this.bajo.lib
+  const { has, isArray, isPlainObject, isString, cloneDeep, isEmpty, merge } = this.bajo.lib._
   if (isPlainObject(url)) {
     extra = cloneDeep(opts)
     opts = cloneDeep(url)
@@ -20,8 +20,8 @@ async function fetchUrl (url, opts = {}, extra = {}) {
   delete opts.params
   if (!has(extra, 'cacheBuster')) extra.cacheBuster = true
   if (extra.cacheBuster) opts.query[extra.cacheBusterKey ?? '_'] = Date.now()
-  if (!isEmpty(cfg.fetch.agent)) {
-    opts.dispatcher = new Agent(cfg.fetch.agent)
+  if (!isEmpty(this.config.fetch.agent)) {
+    opts.dispatcher = new Agent(this.config.fetch.agent)
   }
   if (opts.body && extra.formData) {
     const formData = new FormData()

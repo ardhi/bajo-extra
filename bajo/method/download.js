@@ -2,9 +2,9 @@ import path from 'path'
 import { Readable } from 'node:stream'
 
 async function download (url, opts = {}, extra = {}) {
-  const { fs, getPluginDataDir, importPkg, error, generateId } = this.bajo.helper
-  const { fetch, formatByte, formatPercentage } = this.bajoExtra.helper
-  const { isFunction, merge } = this.bajo.helper._
+  const { getPluginDataDir, importPkg, error, generateId } = this.bajo
+  const { fs } = this.bajo.lib
+  const { isFunction, merge } = this.bajo.lib._
   if (typeof opts === 'string') extra = { dir: opts }
   const increment = await importPkg('add-filename-increment')
   if (!extra.dir) {
@@ -32,8 +32,8 @@ async function download (url, opts = {}, extra = {}) {
     if (isFunction(extra.progressFn)) extra.progressFn.call(this, length, total)
     else if (extra.spin) {
       extra.spinText = extra.spinText ?? 'Downloading...'
-      if (total === 0) extra.spin.setText(`${extra.spinText} %s`, formatByte(length))
-      else extra.spin.setText(`${extra.spinText} %s of %s (%s)`, formatByte(length), formatByte(total), formatPercentage(length / total))
+      if (total === 0) extra.spin.setText(`${extra.spinText} %s`, this.formatByte(length))
+      else extra.spin.setText(`${extra.spinText} %s of %s (%s)`, this.formatByte(length), this.formatByte(total), this.formatPercentage(length / total))
     }
   })
   data.pipe(writer)

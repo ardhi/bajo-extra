@@ -1,9 +1,8 @@
 async function fetching ({ url, opts, bulk, spin }) {
-  const { setImmediate, print } = this.bajo.helper
-  const { isEmpty, isFunction, has } = this.bajo.helper._
-  const { validationErrorMessage } = this.bajoDb.helper
-  const { fetch } = this.bajoExtra.helper
-  const resp = await fetch(url, opts ?? {})
+  const { setImmediate, print } = this.bajo
+  const { isEmpty, isFunction, has } = this.bajo.lib._
+  const { validationErrorMessage } = this.bajoDb
+  const resp = await this.fetch(url, opts ?? {})
   if (isEmpty(resp)) {
     spin.fatal('No result from server, aborted!')
     return -1
@@ -49,8 +48,8 @@ async function fetching ({ url, opts, bulk, spin }) {
 }
 
 async function fetchBulk (url, bulk = {}, opts = {}) {
-  const { print, spinner, error } = this.bajo.helper
-  const { isFunction } = this.bajo.helper._
+  const { print, spinner, error } = this.bajo
+  const { isFunction } = this.bajo.lib._
   opts.params = opts.params ?? {}
   bulk.maxStep = bulk.maxStep ?? 0
   if (!isFunction(bulk.handler)) throw error('A function handler must be provided')

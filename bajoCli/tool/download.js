@@ -1,13 +1,12 @@
 async function download ({ path, args }) {
-  const { spinner } = this.bajo.helper
-  const { download } = this.bajoExtra.helper
+  const { spinner } = this.bajo
   const url = args[0]
   const spinText = 'Downloading file...'
   const spin = spinner({ showCounter: true }).start(spinText)
 
   let dest
   try {
-    dest = await download(url, undefined, { spin, spinText })
+    dest = await this.download(url, undefined, { spin, spinText })
   } catch (err) {
     spin.fatal('Error: %s', err.message)
   }

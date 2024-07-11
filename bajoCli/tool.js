@@ -1,1 +1,1 @@
-export default 'defCliHandler'
+export default 'default'

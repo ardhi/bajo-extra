@@ -1,6 +1,6 @@
 async function handler (rec, bulk) {
-  const { isFunction, set } = this.bajo.helper._
-  const { recordCreate, recordFind, recordUpdate } = this.bajoDb.helper
+  const { isFunction, set } = this.bajo.lib._
+  const { recordCreate, recordFind, recordUpdate } = this.bajoDb
   const save = bulk.save ?? {}
   const current = save.current ?? {}
   let existing
@@ -51,13 +51,12 @@ async function handler (rec, bulk) {
 }
 
 async function fetchAndSave ({ url, bulk, save = {}, opts = {} } = {}) {
-  const { startPlugin } = this.bajo.helper
-  const { fetchBulk } = this.bajoExtra.helper
-  const { merge } = this.bajo.helper._
+  const { startPlugin } = this.bajo
+  const { merge } = this.bajo.lib._
   merge(bulk, { handler, save })
   await startPlugin('bajoDb')
 
-  await fetchBulk(url, bulk, opts)
+  await this.fetchBulk(url, bulk, opts)
 }
 
 export default fetchAndSave
