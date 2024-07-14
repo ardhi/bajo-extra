@@ -2,16 +2,16 @@ import path from 'path'
 import { Readable } from 'node:stream'
 
 async function download (url, opts = {}, extra = {}) {
-  const { getPluginDataDir, importPkg, error, generateId } = this.bajo
-  const { fs } = this.bajo.lib
-  const { isFunction, merge } = this.bajo.lib._
+  const { getPluginDataDir, importPkg, error, generateId } = this.app.bajo
+  const { fs } = this.app.bajo.lib
+  const { isFunction, merge } = this.app.bajo.lib._
   if (typeof opts === 'string') extra = { dir: opts }
   const increment = await importPkg('add-filename-increment')
   if (!extra.dir) {
     extra.dir = `${getPluginDataDir('bajoExtra')}/download`
     fs.ensureDirSync(extra.dir)
   }
-  if (!fs.existsSync(extra.dir)) throw error('Download dir \'%s\' doesn\'t exists', extra.dir)
+  if (!fs.existsSync(extra.dir)) throw error('Download dir \'%s\' doesn\'t exist', extra.dir)
   if (extra.randomFileName) {
     const ext = path.extname(url)
     extra.fileName = `${generateId()}${ext}`

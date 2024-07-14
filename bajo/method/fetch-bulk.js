@@ -1,7 +1,7 @@
 async function fetching ({ url, opts, bulk, spin }) {
-  const { setImmediate, print } = this.bajo
-  const { isEmpty, isFunction, has } = this.bajo.lib._
-  const { validationErrorMessage } = this.bajoDb
+  const { setImmediate, print } = this.app.bajo
+  const { isEmpty, isFunction, has } = this.app.bajo.lib._
+  const { validationErrorMessage } = this.app.bajoDb
   const resp = await this.fetch(url, opts ?? {})
   if (isEmpty(resp)) {
     spin.fatal('No result from server, aborted!')

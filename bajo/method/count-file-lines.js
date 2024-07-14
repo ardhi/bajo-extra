@@ -1,7 +1,6 @@
 // taken from: https://stackoverflow.com/a/41439945
-import fs from 'fs'
-
 function countFileLines (file) {
+  const { fs } = this.app.bajo.lib
   return new Promise((resolve, reject) => {
     let lineCount = 0
     fs.createReadStream(file)

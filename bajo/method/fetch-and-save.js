@@ -1,6 +1,6 @@
 async function handler (rec, bulk) {
-  const { isFunction, set } = this.bajo.lib._
-  const { recordCreate, recordFind, recordUpdate } = this.bajoDb
+  const { isFunction, set } = this.app.bajo.lib._
+  const { recordCreate, recordFind, recordUpdate } = this.app.bajoDb
   const save = bulk.save ?? {}
   const current = save.current ?? {}
   let existing

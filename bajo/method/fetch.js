@@ -2,9 +2,9 @@ import path from 'path'
 import { fetch, Agent } from 'undici'
 
 async function fetchUrl (url, opts = {}, extra = {}) {
-  const { isSet } = this.bajo
-  const { fs } = this.bajo.lib
-  const { has, isArray, isPlainObject, isString, cloneDeep, isEmpty, merge } = this.bajo.lib._
+  const { isSet } = this.app.bajo
+  const { fs } = this.app.bajo.lib
+  const { has, isArray, isPlainObject, isString, cloneDeep, isEmpty, merge } = this.app.bajo.lib._
   if (isPlainObject(url)) {
     extra = cloneDeep(opts)
     opts = cloneDeep(url)

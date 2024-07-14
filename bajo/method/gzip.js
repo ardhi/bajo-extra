@@ -1,7 +1,7 @@
 import { createGzip, createGunzip } from 'zlib'
 
 function gzip (file, deleteOld, expand) {
-  const { fs } = this.bajo.lib
+  const { fs } = this.app.bajo.lib
   return new Promise((resolve, reject) => {
     const newFile = expand ? file.slice(0, file.length - 3) : (file + '.gz')
     const reader = fs.createReadStream(file)
