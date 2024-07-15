@@ -2,7 +2,7 @@ import path from 'path'
 import { Readable } from 'node:stream'
 
 async function download (url, opts = {}, extra = {}) {
-  const { getPluginDataDir, importPkg, error, generateId } = this.app.bajo
+  const { getPluginDataDir, importPkg, generateId } = this.app.bajo
   const { fs } = this.app.bajo.lib
   const { isFunction, merge } = this.app.bajo.lib._
   if (typeof opts === 'string') extra = { dir: opts }
@@ -11,7 +11,7 @@ async function download (url, opts = {}, extra = {}) {
     extra.dir = `${getPluginDataDir('bajoExtra')}/download`
     fs.ensureDirSync(extra.dir)
   }
-  if (!fs.existsSync(extra.dir)) throw error('Download dir \'%s\' doesn\'t exist', extra.dir)
+  if (!fs.existsSync(extra.dir)) throw this.error('Download dir \'%s\' doesn\'t exist', extra.dir)
   if (extra.randomFileName) {
     const ext = path.extname(url)
     extra.fileName = `${generateId()}${ext}`
@@ -22,7 +22,7 @@ async function download (url, opts = {}, extra = {}) {
   const { headers, body, ok, status } = await fetch(url, opts, merge({}, extra, { rawResponse: true }))
   if (!ok) {
     fs.removeSync(file)
-    throw error('Getting %s status', status)
+    throw this.error('Getting %s status', status)
   }
   const total = headers['content-length'] ?? 0
   const data = Readable.fromWeb(body)

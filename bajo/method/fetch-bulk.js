@@ -48,28 +48,27 @@ async function fetching ({ url, opts, bulk, spin }) {
 }
 
 async function fetchBulk (url, bulk = {}, opts = {}) {
-  const { print, spinner, error } = this.bajo
   const { isFunction } = this.bajo.lib._
   opts.params = opts.params ?? {}
   bulk.maxStep = bulk.maxStep ?? 0
-  if (!isFunction(bulk.handler)) throw error('A function handler must be provided')
+  if (!isFunction(bulk.handler)) throw this.error('A function handler must be provided')
   if (isFunction(bulk.paramsIncFn)) {
-    print.info('Bulk fetch starting')
-    const spin = spinner({ showCounter: true }).start('Fetching starts...')
+    this.print.info('Bulk fetch starting')
+    const spin = this.print.spinner({ showCounter: true }).start('Fetching starts...')
     let step = 1
     for (;;) {
-      print.info('[%s] Batch #%d', spin.getElapsed(), step)
+      this.print.info('[%s] Batch #%d', spin.getElapsed(), step)
       const newOpts = await bulk.paramsIncFn.call(this, { url, bulk, opts })
       if (newOpts) opts = newOpts
       const length = await fetching.call(this, { url, bulk, opts, spin })
       if (length === 0 || (bulk.maxStep > 0 && step >= bulk.maxStep)) {
-        print.info('All done!')
+        this.print.info('All done!')
         break
       }
       step++
     }
   } else {
-    const spin = spinner({ showCounter: true }).start('Fetching starts...')
+    const spin = this.print.spinner({ showCounter: true }).start('Fetching starts...')
     await fetching.call(this, { url, bulk, opts, spin })
   }
 }
