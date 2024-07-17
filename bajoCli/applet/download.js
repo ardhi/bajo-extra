@@ -1,8 +1,7 @@
-async function download ({ path, args }) {
-  const { spinner } = this.bajo
-  const url = args[0]
+async function download (...args) {
+  const [url] = args
   const spinText = 'Downloading file...'
-  const spin = spinner({ showCounter: true }).start(spinText)
+  const spin = this.print.spinner({ showCounter: true }).start(spinText)
 
   let dest
   try {
