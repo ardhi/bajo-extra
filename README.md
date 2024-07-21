@@ -1,12 +1,12 @@
 # bajo-extra
 
-Plugin name: **bajoExtra**, alias: **x**
+Plugin name: **bajoExtra**, alias: **extra**
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/ardhi/bajo-extra) ![NPM Version](https://img.shields.io/npm/v/bajo-extra)
 
 > <br />**Attention**: I do NOT accept any pull request at the moment, thanks!<br /><br />
 
-Extra boost for [Bajo Framework](https://github.com/ardhi/bajo)
+Extra tools & support for [Bajo](https://github.com/ardhi/bajo)
 
 ## Installation
 
