@@ -4,7 +4,7 @@ import { fetch, Agent } from 'undici'
 async function fetchUrl (url, opts = {}, extra = {}) {
   const { isSet } = this.app.bajo
   const { fs } = this.app.bajo.lib
-  const { has, isArray, isPlainObject, isString, cloneDeep, isEmpty, merge } = this.app.bajo.lib._
+  const { has, isArray, isPlainObject, isString, cloneDeep, merge } = this.app.bajo.lib._
   if (isPlainObject(url)) {
     extra = cloneDeep(opts)
     opts = cloneDeep(url)
@@ -20,8 +20,8 @@ async function fetchUrl (url, opts = {}, extra = {}) {
   delete opts.params
   if (!has(extra, 'cacheBuster')) extra.cacheBuster = true
   if (extra.cacheBuster) opts.query[extra.cacheBusterKey ?? '_'] = Date.now()
-  if (!isEmpty(this.config.fetch.agent)) {
-    opts.dispatcher = new Agent(this.config.fetch.agent)
+  if (this.config.fetch.agent || extra.agent) {
+    opts.dispatcher = new Agent(extra.agent ?? this.config.fetch.agent)
   }
   if (opts.body && extra.formData) {
     const formData = new FormData()
