@@ -1,5 +1,4 @@
 {
-  "alias": "extra",
   "fetch": {
     "agent": {}
   }
