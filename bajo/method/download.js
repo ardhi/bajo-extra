@@ -11,7 +11,7 @@ async function download (url, opts = {}, extra = {}) {
     extra.dir = `${getPluginDataDir('bajoExtra')}/download`
     fs.ensureDirSync(extra.dir)
   }
-  if (!fs.existsSync(extra.dir)) throw this.error('Download dir \'%s\' doesn\'t exist', extra.dir)
+  if (!fs.existsSync(extra.dir)) throw this.error('dlDirNotExists%s', extra.dir)
   if (extra.randomFileName) {
     const ext = path.extname(url)
     extra.fileName = `${generateId()}${ext}`
@@ -22,7 +22,7 @@ async function download (url, opts = {}, extra = {}) {
   const { headers, body, ok, status } = await fetch(url, opts, merge({}, extra, { rawResponse: true }))
   if (!ok) {
     fs.removeSync(file)
-    throw this.error('Getting %s status', status)
+    throw this.error('gettingStatus%s', status)
   }
   const total = headers['content-length'] ?? 0
   const data = Readable.fromWeb(body)
@@ -31,7 +31,7 @@ async function download (url, opts = {}, extra = {}) {
     length += chunk.length
     if (isFunction(extra.progressFn)) extra.progressFn.call(this, length, total)
     else if (extra.spin) {
-      extra.spinText = extra.spinText ?? 'Downloading...'
+      extra.spinText = extra.spinText ?? 'downloading'
       if (total === 0) extra.spin.setText(`${extra.spinText} %s`, this.formatByte(length))
       else extra.spin.setText(`${extra.spinText} %s of %s (%s)`, this.formatByte(length), this.formatByte(total), this.formatPercentage(length / total))
     }

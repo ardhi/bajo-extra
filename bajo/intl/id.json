@@ -1,0 +1,17 @@
+{
+  "downloading%s": "Pengunduhan %s...",
+  "noServerResponse": "Tidak ada respon dari server",
+  "noRecordToProcess": "Tidak ada data yang perlu diproses",
+  "gotRecordsProcessing": "Mendapatkan %d data, diproses...",
+  "rec%d%d": "Data %d/%d...",
+  "recProcessed%s%d%d": "[%s] %d/%d data diproses",
+  "createdUpdatedSkipped%s%d%d%d": "[%s] Dibuat: %d, Diubah: %d, Lompati: %d",
+  "handlerMustBeProvided": "Sebuah fungsi harus diberikan",
+  "bulkFetchStarting": "Bulk fetch dimulai",
+  "fetchingStarts": "Fetching dimulai...",
+  "batch%s%d": "[%s] Batch #%d",
+  "allDone": "Selesai semua!",
+  "dlDirNotExists%s": "Dir unduh '%s' belum ada",
+  "gettingStatus%s": "Mendapatkan status %s",
+  "downloading": "Pengunduhan..."
+}

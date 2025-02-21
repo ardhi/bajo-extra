@@ -1,0 +1,17 @@
+{
+  "downloading%s": "Downloading %s...",
+  "noServerResponse": "No response from server",
+  "noRecordToProcess": "No record to process",
+  "gotRecordsProcessing": "Got %d records, processing...",
+  "rec%d%d": "Record %d/%d...",
+  "recProcessed%s%d%d": "[%s] %d/%d records processed",
+  "createdUpdatedSkipped%s%d%d%d": "[%s] Created: %d, Updated: %d, Skipped: %d",
+  "handlerMustBeProvided": "A function handler must be provided",
+  "bulkFetchStarting": "Bulk fetch starting",
+  "fetchingStarts": "Fetching starts...",
+  "batch%s%d": "[%s] Batch #%d",
+  "allDone": "All done!",
+  "dlDirNotExists%s": "Download dir '%s' doesn't exist",
+  "gettingStatus%s": "Getting %s status",
+  "downloading": "Downloading..."
+}
