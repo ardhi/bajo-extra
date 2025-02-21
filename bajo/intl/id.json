@@ -5,7 +5,7 @@
   "gotRecordsProcessing": "Mendapatkan %d data, diproses...",
   "rec%d%d": "Data %d/%d...",
   "recProcessed%s%d%d": "[%s] %d/%d data diproses",
-  "createdUpdatedSkipped%s%d%d%d": "[%s] Dibuat: %d, Diubah: %d, Lompati: %d",
+  "createdUpdatedSkipped%s%d%d%d": "[%s] Dibuat: %d, Diubah: %d, Lewati: %d",
   "handlerMustBeProvided": "Sebuah fungsi harus diberikan",
   "bulkFetchStarting": "Bulk fetch dimulai",
   "fetchingStarts": "Fetching dimulai...",
