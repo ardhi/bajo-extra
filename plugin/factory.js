@@ -2,9 +2,10 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { createGzip, createGunzip } from 'zlib'
 import path from 'path'
-import { fetch, Agent } from 'undici'
+import { fetch } from 'undici'
 import { Readable } from 'stream'
 import numbro from 'numbro'
+import { ShortCrypt } from 'short-crypt'
 
 async function fetching ({ url, opts, bulk, spin }) {
   const { setImmediate, print } = this.app.bajo
@@ -115,6 +116,7 @@ async function factory (pkgName) {
       super(pkgName, me.app)
       this.alias = 'extra'
       this.config = {
+        secret: 'hxKY8Eh63Op9js6ovU25qmq2DmCE9dIB',
         fetch: {
           agent: {}
         }
@@ -251,7 +253,7 @@ async function factory (pkgName) {
     fetchUrl = async (url, opts = {}, extra = {}) => {
       const { isSet } = this.app.bajo
       const { fs } = this.app.bajo.lib
-      const { has, isArray, isPlainObject, isString, cloneDeep, merge } = this.app.bajo.lib._
+      const { isEmpty, has, isArray, isPlainObject, isString, cloneDeep, merge } = this.app.bajo.lib._
       if (isPlainObject(url)) {
         extra = cloneDeep(opts)
         opts = cloneDeep(url)
@@ -263,12 +265,13 @@ async function factory (pkgName) {
         opts.headers.Authorization = `Basic ${Buffer.from(`${opts.auth.username}:${opts.auth.password}`).toString('base64')}`
         delete opts.auth
       }
-      opts.query = merge({}, opts.query, opts.params ?? {})
+      const query = merge({}, opts.query, opts.params ?? {})
+      if (!isEmpty(query)) opts.query = query
       delete opts.params
       if (!has(extra, 'cacheBuster')) extra.cacheBuster = true
       if (extra.cacheBuster) opts.query[extra.cacheBusterKey ?? '_'] = Date.now()
       if (this.config.fetch.agent || extra.agent) {
-        opts.dispatcher = new Agent(extra.agent ?? this.config.fetch.agent)
+        // opts.dispatcher = new Agent(extra.agent ?? this.config.fetch.agent)
       }
       if (opts.body && extra.formData) {
         const formData = new FormData()
@@ -290,6 +293,8 @@ async function factory (pkgName) {
         const query = new URLSearchParams(opts.query)
         url += '?' + query
       }
+      opts.headers = opts.headers ?? {}
+      if (this.config.fetch.userAgent) opts.headers['User-Agent'] = this.config.fetch.userAgent
       const resp = await fetch(url, opts)
       if (extra.rawResponse) return resp
       return await resp.json()
@@ -335,6 +340,36 @@ async function factory (pkgName) {
 
     isMd5 = (text) => {
       return /^[a-f0-9]{32}$/i.test(text)
+    }
+
+    encrypt = async (text, { type = 'short', subType = 'qr' } = {}) => {
+      const short = (item) => {
+        const sc = new ShortCrypt(this.config.secret)
+        const method = subType === 'qr' ? 'encryptToQRCodeAlphanumeric' : 'encryptToURLComponent'
+        return sc[method](item)
+      }
+      switch (type) {
+        case 'short': return short(text)
+      }
+      throw this.error('invalid%s%s', this.print.write('encryption type'), type)
+    }
+
+    decrypt = async (cipher, { type = 'short', subType = 'qr' } = {}) => {
+      const short = (item) => {
+        const sc = new ShortCrypt(this.config.secret)
+        const method = subType === 'qr' ? 'decryptToQRCodeAlphanumeric' : 'decryptToURLComponent'
+        return sc[method](item)
+      }
+      switch (type) {
+        case 'short': return short(cipher)
+      }
+      throw this.error('invalid%s%s', this.print.write('decryption type'), type)
+    }
+
+    randomRange = (min, max, alpha) => {
+      const num = Math.floor(Math.random() * (max - min + 1) + min)
+      if (!alpha) return num
+      return String.fromCharCode(96 + num)
     }
   }
 }

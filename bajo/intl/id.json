@@ -13,5 +13,8 @@
   "allDone": "Selesai semua!",
   "dlDirNotExists%s": "Dir unduh '%s' belum ada",
   "gettingStatus%s": "Mendapatkan status %s",
-  "downloading": "Pengunduhan..."
+  "downloading": "Pengunduhan...",
+  "encryption type": "Tipe enkripsi",
+  "decryption type": "Tipe dekripsi",
+  "fetching%s": "Fetching %s"
 }

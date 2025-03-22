@@ -13,5 +13,8 @@
   "allDone": "All done!",
   "dlDirNotExists%s": "Download dir '%s' doesn't exist",
   "gettingStatus%s": "Getting %s status",
-  "downloading": "Downloading..."
+  "downloading": "Downloading...",
+  "encryption type": "encryption type",
+  "decryption type": "decryption type",
+  "fetching%s": "Fetching %s"
 }
