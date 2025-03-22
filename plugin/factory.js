@@ -9,7 +9,7 @@ import { ShortCrypt } from 'short-crypt'
 
 async function fetching ({ url, opts, bulk, spin }) {
   const { setImmediate, print } = this.app.bajo
-  const { isEmpty, isFunction, has } = this.app.bajo.lib._
+  const { isEmpty, isFunction, has } = this.lib._
   const { validationErrorMessage } = this.app.bajoDb
   const resp = await this.fetch(url, opts ?? {})
   if (isEmpty(resp)) {
@@ -57,7 +57,7 @@ async function fetching ({ url, opts, bulk, spin }) {
 }
 
 async function handler (rec, bulk) {
-  const { isFunction, set } = this.app.bajo.lib._
+  const { isFunction, set } = this.lib._
   const { recordCreate, recordFind, recordUpdate } = this.app.bajoDb
   const save = bulk.save ?? {}
   const current = save.current ?? {}
@@ -152,7 +152,7 @@ async function factory (pkgName) {
 
     // taken from: https://stackoverflow.com/a/41439945
     countFileLines = async (file) => {
-      const { fs } = this.app.bajo.lib
+      const { fs } = this.lib
       return new Promise((resolve, reject) => {
         let lineCount = 0
         fs.createReadStream(file)
@@ -173,10 +173,10 @@ async function factory (pkgName) {
 
     download = async (url, opts = {}, extra = {}) => {
       const { getPluginDataDir, importPkg, generateId } = this.app.bajo
-      const { fs } = this.app.bajo.lib
-      const { isFunction, merge } = this.app.bajo.lib._
+      const { fs } = this.lib
+      const { isFunction, merge } = this.lib._
       if (typeof opts === 'string') extra = { dir: opts }
-      const increment = await importPkg('add-filename-increment')
+      const increment = await importPkg('bajo:add-filename-increment')
       if (!extra.dir) {
         extra.dir = `${getPluginDataDir('bajoExtra')}/download`
         fs.ensureDirSync(extra.dir)
@@ -252,8 +252,8 @@ async function factory (pkgName) {
 
     fetchUrl = async (url, opts = {}, extra = {}) => {
       const { isSet } = this.app.bajo
-      const { fs } = this.app.bajo.lib
-      const { isEmpty, has, isArray, isPlainObject, isString, cloneDeep, merge } = this.app.bajo.lib._
+      const { fs } = this.lib
+      const { isEmpty, has, isArray, isPlainObject, isString, cloneDeep, merge } = this.lib._
       if (isPlainObject(url)) {
         extra = cloneDeep(opts)
         opts = cloneDeep(url)
@@ -305,7 +305,7 @@ async function factory (pkgName) {
     }
 
     gzip = async (file, deleteOld, expand) => {
-      const { fs } = this.app.bajo.lib
+      const { fs } = this.lib
       return new Promise((resolve, reject) => {
         const newFile = expand ? file.slice(0, file.length - 3) : (file + '.gz')
         const reader = fs.createReadStream(file)
