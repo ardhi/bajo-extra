@@ -17,5 +17,6 @@
   "encryption type": "encryption type",
   "decryption type": "decryption type",
   "fetching%s": "Fetching %s",
-  "peerError%s": "Peer error: %s"
+  "peerError%s": "Peer error: %s",
+  "disabled%s": "%s is disabled"
 }

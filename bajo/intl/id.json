@@ -17,5 +17,6 @@
   "encryption type": "Tipe enkripsi",
   "decryption type": "Tipe dekripsi",
   "fetching%s": "Fetching %s",
-  "peerError%s": "Kesalahan dari peer: %s"
+  "peerError%s": "Kesalahan dari peer: %s",
+  "disabled%s": "%s dinonaktifkan"
 }
