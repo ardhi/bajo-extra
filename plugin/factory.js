@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { createGzip, createGunzip } from 'zlib'
 import path from 'path'
-import { fetch } from 'undici'
+import { fetch, Agent } from 'undici'
 import { Readable } from 'stream'
 import numbro from 'numbro'
 import { ShortCrypt } from 'short-crypt'
@@ -118,7 +118,10 @@ async function factory (pkgName) {
       this.config = {
         secret: 'hxKY8Eh63Op9js6ovU25qmq2DmCE9dIB',
         fetch: {
-          agent: {}
+          agent: {
+            autoSelectFamilyAttemptTimeout: 1000,
+            autoSelectFamily: true
+          }
         }
       }
     }
@@ -271,7 +274,7 @@ async function factory (pkgName) {
       if (!has(extra, 'cacheBuster')) extra.cacheBuster = true
       if (extra.cacheBuster) opts.query[extra.cacheBusterKey ?? '_'] = Date.now()
       if (this.config.fetch.agent || extra.agent) {
-        // opts.dispatcher = new Agent(extra.agent ?? this.config.fetch.agent)
+        opts.dispatcher = new Agent(extra.agent ?? this.config.fetch.agent)
       }
       if (opts.body && extra.formData) {
         const formData = new FormData()
