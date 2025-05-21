@@ -269,6 +269,9 @@ async function factory (pkgName) {
         delete opts.auth
       }
       const query = merge({}, opts.query, opts.params ?? {})
+      for (const q in query) {
+        if (!isSet(query[q])) delete query[q]
+      }
       if (!isEmpty(query)) opts.query = query
       delete opts.params
       if (!has(extra, 'cacheBuster')) extra.cacheBuster = true
