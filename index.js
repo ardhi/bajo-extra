@@ -254,7 +254,7 @@ async function factory (pkgName) {
     }
 
     fetchUrl = async (url, opts = {}, extra = {}) => {
-      const { isSet } = this.lib.aneka
+      const { isSet } = this.app.bajo
       const { fs } = this.lib
       const { isEmpty, has, isArray, isPlainObject, isString, cloneDeep, merge } = this.lib._
       if (isPlainObject(url)) {
