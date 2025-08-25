@@ -112,9 +112,10 @@ async function factory (pkgName) {
   const me = this
 
   return class BajoExtra extends this.lib.Plugin {
+    static alias = 'extra'
+
     constructor () {
       super(pkgName, me.app)
-      this.alias = 'extra'
       this.config = {
         secret: 'hxKY8Eh63Op9js6ovU25qmq2DmCE9dIB',
         fetch: {
