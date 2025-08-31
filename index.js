@@ -9,7 +9,7 @@ import { ShortCrypt } from 'short-crypt'
 
 async function fetching ({ url, opts, bulk, spin }) {
   const { setImmediate, print } = this.app.bajo
-  const { isEmpty, isFunction, has } = this.lib._
+  const { isEmpty, isFunction, has } = this.app.lib._
   const { validationErrorMessage } = this.app.bajoDb
   const resp = await this.fetch(url, opts ?? {})
   if (isEmpty(resp)) {
@@ -57,7 +57,7 @@ async function fetching ({ url, opts, bulk, spin }) {
 }
 
 async function handler (rec, bulk) {
-  const { isFunction, set } = this.lib._
+  const { isFunction, set } = this.app.lib._
   const { recordCreate, recordFind, recordUpdate } = this.app.bajoDb
   const save = bulk.save ?? {}
   const current = save.current ?? {}
@@ -111,7 +111,7 @@ async function handler (rec, bulk) {
 async function factory (pkgName) {
   const me = this
 
-  return class BajoExtra extends this.lib.Plugin {
+  return class BajoExtra extends this.app.pluginClass.base {
     static alias = 'extra'
 
     constructor () {
@@ -156,7 +156,7 @@ async function factory (pkgName) {
 
     // taken from: https://stackoverflow.com/a/41439945
     countFileLines = async (file) => {
-      const { fs } = this.lib
+      const { fs } = this.app.lib
       return new Promise((resolve, reject) => {
         let lineCount = 0
         fs.createReadStream(file)
@@ -177,8 +177,8 @@ async function factory (pkgName) {
 
     download = async (url, opts = {}, extra = {}) => {
       const { getPluginDataDir, importPkg, generateId } = this.app.bajo
-      const { fs } = this.lib
-      const { isFunction, merge } = this.lib._
+      const { fs } = this.app.lib
+      const { isFunction, merge } = this.app.lib._
       if (typeof opts === 'string') extra = { dir: opts }
       const increment = await importPkg('bajo:add-filename-increment')
       if (!extra.dir) {
@@ -255,9 +255,9 @@ async function factory (pkgName) {
     }
 
     fetchUrl = async (url, opts = {}, extra = {}) => {
-      const { isSet } = this.lib.aneka
-      const { fs } = this.lib
-      const { isEmpty, has, isArray, isPlainObject, isString, cloneDeep, merge } = this.lib._
+      const { isSet } = this.app.lib.aneka
+      const { fs } = this.app.lib
+      const { isEmpty, has, isArray, isPlainObject, isString, cloneDeep, merge } = this.app.lib._
       if (isPlainObject(url)) {
         extra = cloneDeep(opts)
         opts = cloneDeep(url)
@@ -312,7 +312,7 @@ async function factory (pkgName) {
     }
 
     gzip = async (file, deleteOld, expand) => {
-      const { fs } = this.lib
+      const { fs } = this.app.lib
       return new Promise((resolve, reject) => {
         const newFile = expand ? file.slice(0, file.length - 3) : (file + '.gz')
         const reader = fs.createReadStream(file)
@@ -358,7 +358,7 @@ async function factory (pkgName) {
       switch (type) {
         case 'short': return short(text)
       }
-      throw this.error('invalid%s%s', this.print.write('encryption type'), type)
+      throw this.error('invalid%s%s', this.t('encryption type'), type)
     }
 
     decrypt = async (cipher, { type = 'short', subType = 'qr' } = {}) => {
@@ -370,7 +370,7 @@ async function factory (pkgName) {
       switch (type) {
         case 'short': return short(cipher)
       }
-      throw this.error('invalid%s%s', this.print.write('decryption type'), type)
+      throw this.error('invalid%s%s', this.t('decryption type'), type)
     }
 
     randomRange = (min, max, alpha) => {
