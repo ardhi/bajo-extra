@@ -1,22 +1,25 @@
 # bajo-extra
 
-Plugin name: **bajoExtra**, alias: **extra**
-
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/ardhi/bajo-extra) ![NPM Version](https://img.shields.io/npm/v/bajo-extra)
 
-> <br />**Attention**: I do NOT accept any pull request at the moment, thanks!<br /><br />
+> <br />**Attention**: I do NOT accept any pull requests at the moment, thanks! ([Why?](https://github.com/ardhi/bajo/blob/main/tutorial/00-welcome.md#contribution))<br /><br />
 
-Extra tools & support for [Bajo](https://github.com/ardhi/bajo)
+Extra Tools & Features for [Bajo](https://github.com/ardhi/bajo)
 
 ## Installation
 
-Goto your ```<bajo-base-dir>``` and type:
+First, go to your ```{app-dir}``` and run the following command in your terminal:
 
 ```bash
 $ npm install bajo-extra
 ```
 
-Now open your ```<bajo-data-dir>/config/.plugins``` and put ```bajo-extra``` in it
+Next, open the file located at ```{data-dir}/config/.plugins``` and add ```bajo-extra```
+
+## Documentations
+
+- [Config Object](tutorial/00-config.md)
+- [API](https://ardhi.github.io/bajo-extra)
 
 ## License
 

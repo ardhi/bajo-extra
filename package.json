@@ -4,7 +4,8 @@
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-doc": "jsdoc -c .jsdoc.conf.json",
+    "test": "mocha"
   },
   "type": "module",
   "bajo": {
@@ -38,5 +39,9 @@
     "performant-array-to-tree": "^1.11.0",
     "short-crypt": "^4.0.0",
     "undici": "^7.2.1"
+  },
+  "devDependencies": {
+    "clean-jsdoc-theme": "^4.3.0",
+    "jsdoc-plugin-intersection": "^1.0.4"
   }
 }
