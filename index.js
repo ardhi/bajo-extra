@@ -119,7 +119,7 @@ async function factory (pkgName) {
    *
    * @class
    */
-  class BajoExtra extends this.app.pluginClass.base {
+  class BajoExtra extends this.app.baseClass.Base {
     static alias = 'extra'
 
     constructor () {
@@ -184,7 +184,8 @@ async function factory (pkgName) {
     }
 
     download = async (url, opts = {}, extra = {}) => {
-      const { getPluginDataDir, importPkg, generateId } = this.app.bajo
+      const { getPluginDataDir, importPkg } = this.app.bajo
+      const { generateId } = this.app.lib.aneka
       const { fetch } = await importPkg('bajoExtra:undici')
       const { fs } = this.app.lib
       const { isFunction, merge } = this.app.lib._

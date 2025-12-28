@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -31,14 +31,14 @@
   "homepage": "https://github.com/ardhi/bajo-extra#readme",
   "dependencies": {
     "async": "^3.2.6",
-    "bcrypt": "^5.1.1",
-    "cheerio": "^1.1.0",
-    "fast-jwt": "^5.0.2",
-    "fast-xml-parser": "^4.5.1",
+    "bcrypt": "^6.0.0",
+    "cheerio": "^1.1.2",
+    "fast-jwt": "^6.1.0",
+    "fast-xml-parser": "^5.3.3",
     "numbro": "^2.5.0",
     "performant-array-to-tree": "^1.11.0",
     "short-crypt": "^4.0.0",
-    "undici": "^7.2.1"
+    "undici": "^7.16.0"
   },
   "devDependencies": {
     "clean-jsdoc-theme": "^4.3.0",
