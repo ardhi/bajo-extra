@@ -120,8 +120,6 @@ async function factory (pkgName) {
    * @class
    */
   class BajoExtra extends this.app.baseClass.Base {
-    static alias = 'extra'
-
     constructor () {
       super(pkgName, me.app)
       this.config = {
