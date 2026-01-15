@@ -283,6 +283,7 @@ async function factory (pkgName) {
       for (const q in query) {
         if (!isSet(query[q])) delete query[q]
       }
+      opts.query = opts.query ?? {}
       if (!isEmpty(query)) opts.query = query
       delete opts.params
       if (!has(extra, 'cacheBuster')) extra.cacheBuster = true
