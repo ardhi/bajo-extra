@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-04-25
+
+- [2.3.0] Add ```isSha256()```
+
 ## 2026-01-16
 
 - [2.2.1] Bug fix on ```fetchUrl()``` for url with query string
