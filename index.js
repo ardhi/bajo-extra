@@ -3,6 +3,7 @@ import { createGzip, createGunzip } from 'zlib'
 import path from 'path'
 import { Readable } from 'stream'
 import numbro from 'numbro'
+import sharp from 'sharp'
 
 async function fetching ({ url, opts, bulk, spin }) {
   const { setImmediate, print } = this.app.bajo
@@ -129,6 +130,10 @@ async function factory (pkgName) {
             autoSelectFamilyAttemptTimeout: 1000,
             autoSelectFamily: true
           }
+        },
+        thumbnail: {
+          inputFormats: ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif', '.tiff', '.svg'],
+          outputFormats: ['.png']
         }
       }
     }
@@ -398,6 +403,59 @@ async function factory (pkgName) {
       const num = Math.floor(Math.random() * (max - min + 1) + min)
       if (!alpha) return num
       return String.fromCharCode(96 + num)
+    }
+
+    thumbnailSizes = name => {
+      switch (name) {
+        case 's': return [36, 36]
+        case 'm': return [100, 100]
+        case 'l': return [250, 250]
+        default: {
+          const [w, h] = name.split('x').map(s => parseInt(s))
+          if (!w || !h) return [0, 0]
+          return [w, h]
+        }
+      }
+    }
+
+    createThumbnail = async (file, options = {}) => {
+      const { fs } = this.app.lib
+      const { isString } = this.app.lib._
+      let {
+        dir = path.dirname(file),
+        silent = true,
+        size = this.config.thumbnail.sizes,
+        format = this.config.thumbnail.outputFormats,
+        opts = {}
+      } = options
+      if (isString(size)) size = [size]
+      if (isString(format)) format = [format]
+      const ext = path.extname(file)
+
+      if (!this.config.thumbnail.inputFormats.includes(ext)) {
+        if (silent) return
+        throw this.error('tnUnsupportedFormat%s%s', file, this.config.thumbnail.inputFormats)
+      }
+      const base = path.basename(file, ext)
+      fs.ensureDirSync(dir)
+      for (const s of size) {
+        const [w, h] = this.thumbnailSizes(s)
+        if (w === 0 || h === 0) {
+          if (silent) continue
+          throw this.error('tnInvalidSize%s%s', file, [...size, '<width>x<height>'])
+        }
+        for (const to of format) {
+          const dest = `${dir}/${base}-${s}${to}`
+          try {
+            await sharp(file)
+              .resize(w, h, opts)
+              .toFile(dest)
+          } catch (err) {
+            if (silent) continue
+            throw err
+          }
+        }
+      }
     }
   }
 

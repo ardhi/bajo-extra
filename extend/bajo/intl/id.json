@@ -18,5 +18,7 @@
   "decryption type": "Tipe dekripsi",
   "fetching%s": "Fetching %s",
   "peerError%s": "Kesalahan dari peer: %s",
-  "disabled%s": "%s dinonaktifkan"
+  "disabled%s": "%s dinonaktifkan",
+  "tnUnsupportedFormat%s%s": "Format thumbnail tidak didukung di '%s', tersedia: %s",
+  "tnInvalidSize%s%s": "Ukuran thumbnail '%s' tidak didukung,  tersedia: '%s'"
 }

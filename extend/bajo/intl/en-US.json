@@ -18,5 +18,7 @@
   "decryption type": "decryption type",
   "fetching%s": "Fetching %s",
   "peerError%s": "Peer error: %s",
-  "disabled%s": "%s is disabled"
+  "disabled%s": "%s is disabled",
+  "tnUnsupportedFormat%s%s": "Unsupported thumbnail format in '%s', available: %s",
+  "tnInvalidSize%s%s": "Unsupported thumbnail size '%s' for '%s'"
 }

@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "fast-xml-parser": "^5.3.3",
     "numbro": "^2.5.0",
     "performant-array-to-tree": "^1.11.0",
+    "sharp": "^0.34.5",
     "short-crypt": "^4.0.0",
     "undici": "^7.16.0"
   },

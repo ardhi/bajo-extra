@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-05-02
+
+- [2.4.0] Add ```sharp``` as library
+- [2.4.0] Add ```thumbnailSizes()```
+- [2.4.0] Add ```createThumbnail()```
+
 ## 2026-04-25
 
 - [2.3.0] Add ```isSha256()```
