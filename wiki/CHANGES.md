@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-05-03
+
+- [2.5.0] Add ```isHtmlLink```
+
 ## 2026-05-02
 
 - [2.4.0] Add ```sharp``` as library

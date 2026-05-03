@@ -371,6 +371,10 @@ async function factory (pkgName) {
       return /^[a-f0-9]{64}$/i.test(text)
     }
 
+    isHtmlLink = (text) => {
+      return /<a\s+[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi.test(text)
+    }
+
     encrypt = async (text, { type = 'short', subType = 'qr' } = {}) => {
       const { importPkg } = this.app.bajo
       const { ShortCrypt } = await importPkg('bajoExtra:short-crypt')
