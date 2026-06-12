@@ -187,7 +187,7 @@ async function factory (pkgName) {
     }
 
     download = async (url, opts = {}, extra = {}) => {
-      const { getPluginDataDir, importPkg } = this.app.bajo
+      const { importPkg } = this.app.bajo
       const { generateId } = this.app.lib.aneka
       const { fetch } = await importPkg('bajoExtra:undici')
       const { fs } = this.app.lib
@@ -195,7 +195,7 @@ async function factory (pkgName) {
       if (typeof opts === 'string') extra = { dir: opts }
       const increment = await importPkg('bajo:add-filename-increment')
       if (!extra.dir) {
-        extra.dir = `${getPluginDataDir('bajoExtra')}/download`
+        extra.dir = `${this.app.getPluginDataDir('bajoExtra')}/download`
         fs.ensureDirSync(extra.dir)
       }
       if (!fs.existsSync(extra.dir)) throw this.error('dlDirNotExists%s', extra.dir)

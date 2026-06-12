@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-06-12
+
+- [2.6.0] Necessary updates to ```bajo@2.18.0``` specs
+
 ## 2026-05-03
 
 - [2.5.0] Add ```isHtmlLink```
