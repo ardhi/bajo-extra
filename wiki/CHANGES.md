@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-28
+
+- [2.7.0] Add documentations
+- [2.7.0] Add tests
+
 ## 2026-06-12
 
 - [2.6.0] Necessary updates to ```bajo@2.18.0``` specs

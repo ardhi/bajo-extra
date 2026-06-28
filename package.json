@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -43,7 +43,9 @@
     "undici": "^7.16.0"
   },
   "devDependencies": {
+    "chai": "^6.2.2",
     "clean-jsdoc-theme": "^4.3.0",
-    "jsdoc-plugin-intersection": "^1.0.4"
+    "jsdoc-plugin-intersection": "^1.0.4",
+    "mocha": "^11.7.6"
   }
 }
