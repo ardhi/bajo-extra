@@ -4,6 +4,7 @@ import path from 'path'
 import { Readable } from 'stream'
 import numbro from 'numbro'
 import sharp from 'sharp'
+import lockfile from '@bybrave/proper-lockfile2'
 
 /**
  * Plugin factory.
@@ -690,6 +691,50 @@ async function factory (pkgName) {
             throw err
           }
         }
+      }
+    }
+
+    /**
+     * Acquire a lock on a specified file to prevent concurrent access.
+     *
+     * @param {string} file - The path to the file to lock. If no path found, it will be saved in `{tmpDir}`. Can be in many formats, see {@link https://ardhi.github.io/bajo/App.html#getPluginFile|getPluginFile} for details.
+     * @param {Object} [options={}] - The options for locking the file.
+     * @returns {Promise<function>} - A promise that resolves to the lock release function.
+     */
+    lock = async (file, options = {}) => {
+      const { ensureFile = true, silent = true } = options
+      const { fs } = this.app.lib
+      options.fs = fs
+      try {
+        if (path.basename(file) === file) file = `${this.app.bajo.dir.tmp}/${file}`
+        else file = this.app.getPluginFile(file)
+        if (ensureFile) await fs.ensureFile(file)
+        return await lockfile.lock(file, options)
+      } catch (err) {
+        if (silent) return null
+        throw err
+      }
+    }
+
+    /**
+     * Unlock a specified file that was previously locked, allowing concurrent access again.
+     * @param {string} file - The path to the file to unlock. If no path found, it will be saved in `{tmpDir}`. Can be in many formats, see {@link https://ardhi.github.io/bajo/App.html#getPluginFile|getPluginFile} for details.
+     * @param {Object} [options={}] - The options for unlocking the file.
+     * @returns {Promise<function>} - A promise that resolves to the lock release function.
+     */
+    unlock = async (file, options = {}) => {
+      const { silent = true } = options
+      const { fs } = this.app.lib
+      options.fs = fs
+      try {
+        if (path.basename(file) === file) file = `${this.app.bajo.dir.tmp}/${file}`
+        else file = this.app.getPluginFile(file)
+        if (!fs.existsSync(file)) return true
+        await lockfile.unlock(file)
+        return true
+      } catch (err) {
+        if (silent) return null
+        throw err
       }
     }
   }
