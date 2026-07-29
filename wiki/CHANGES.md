@@ -2,6 +2,10 @@
 
 ## 2026-07-28
 
+- [2.9.0] Downgrade to `undici@7`
+
+## 2026-07-28
+
 - [2.8.0] Add `lock()` & `unlock()` for file locking
 
 ## 2026-06-28
