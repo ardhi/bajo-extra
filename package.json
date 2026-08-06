@@ -1,6 +1,6 @@
 {
   "name": "bajo-extra",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "Extra package for Bajo Framework",
   "main": "index.js",
   "scripts": {
@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/ardhi/bajo-extra#readme",
   "dependencies": {
-    "@bybrave/proper-lockfile2": "^5.0.0",
     "async": "^3.2.6",
     "bcrypt": "^6.0.0",
     "cheerio": "^1.2.0",

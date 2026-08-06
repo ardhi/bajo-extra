@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-08-06
+
+- [2.10.0] Remove `lock()` & `unlock()` and moved to `bajo` core package
+
 ## 2026-07-28
 
 - [2.9.0] Downgrade to `undici@7`
