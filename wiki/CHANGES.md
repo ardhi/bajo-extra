@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-11-20
+
+- [2.11.0] Add `xl` size for thumbnail
+
 ## 2026-08-06
 
 - [2.10.0] Remove `lock()` & `unlock()` and moved to `bajo` core package

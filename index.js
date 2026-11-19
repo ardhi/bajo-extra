@@ -623,7 +623,7 @@ async function factory (pkgName) {
      * Get the dimensions for a given thumbnail size name.
      *
      * @method
-     * @param {string} name - The name of the thumbnail size (e.g., 's', 'm', 'l', or '<width>x<height>').
+     * @param {string} name - The name of the thumbnail size (e.g., 's', 'm', 'l', 'xl' or '<width>x<height>').
      * @returns {number[]} - The width and height of the thumbnail.
      */
     thumbnailSizes = name => {
@@ -631,6 +631,7 @@ async function factory (pkgName) {
         case 's': return [36, 36]
         case 'm': return [100, 100]
         case 'l': return [250, 250]
+        case 'xl': return [500, 500]
         default: {
           const [w, h] = name.split('x').map(s => parseInt(s))
           if (!w || !h) return [0, 0]
