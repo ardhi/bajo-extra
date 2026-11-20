@@ -3,6 +3,8 @@
 ## 2026-11-20
 
 - [2.11.0] Add `xl` size for thumbnail
+- [2.12.0] Refactoring `thumbnailSizes()`
+- [2.12.0] Refactoring `createThumbnail()`
 
 ## 2026-08-06
 

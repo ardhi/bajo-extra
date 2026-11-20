@@ -32,6 +32,8 @@ async function factory (pkgName) {
        * @property {string} config.secret - Secret key for encryption/decryption
        * @property {object} config.fetch - Fetch configuration
        * @property {object} config.thumbnail - Thumbnail configuration
+       * @property {Array<string>} config.thumbnail.sizes - Supported thumbnail sizes
+       * @property {Array<string>} config.thumbnail.formats - Supported thumbnail formats
        */
       this.config = {
         secret: 'hxKY8Eh63Op9js6ovU25qmq2DmCE9dIB', // random hard coded, should be overridden by user config
@@ -42,8 +44,13 @@ async function factory (pkgName) {
           }
         },
         thumbnail: {
-          inputFormats: ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif', '.tiff', '.svg'],
-          outputFormats: ['.png']
+          size: {
+            s: [64, 64],
+            m: [150, 150],
+            l: [300, 300],
+            xl: [500, 500]
+          },
+          formats: ['png']
         }
       }
     }
@@ -627,17 +634,11 @@ async function factory (pkgName) {
      * @returns {number[]} - The width and height of the thumbnail.
      */
     thumbnailSizes = name => {
-      switch (name) {
-        case 's': return [36, 36]
-        case 'm': return [100, 100]
-        case 'l': return [250, 250]
-        case 'xl': return [500, 500]
-        default: {
-          const [w, h] = name.split('x').map(s => parseInt(s))
-          if (!w || !h) return [0, 0]
-          return [w, h]
-        }
-      }
+      const keys = Object.keys(this.config.thumbnail.size)
+      if (keys.includes(name)) return this.config.thumbnail.size[name]
+      const [w, h] = name.split('x').map(s => parseInt(s))
+      if (!w || !h) return [0, 0]
+      return [w, h]
     }
 
     /**
@@ -656,32 +657,33 @@ async function factory (pkgName) {
      */
     createThumbnail = async (file, options = {}) => {
       const { fs } = this.app.lib
-      const { isString } = this.app.lib._
+      const { isString, trim } = this.app.lib._
+      const images = this.app.lib.mimeTypes.images
       let {
         dir = path.dirname(file),
         silent = true,
-        size = this.config.thumbnail.sizes,
-        format = this.config.thumbnail.outputFormats,
+        sizes = Object.keys(this.config.thumbnail.size),
+        formats = this.config.thumbnail.formats,
         opts = {}
       } = options
-      if (isString(size)) size = [size]
-      if (isString(format)) format = [format]
-      const ext = path.extname(file)
+      if (isString(sizes)) sizes = [sizes]
+      if (isString(formats)) formats = [formats]
+      const ext = trim(path.extname(file), '.')
 
-      if (!this.config.thumbnail.inputFormats.includes(ext)) {
+      if (!images.includes(ext)) {
         if (silent) return
-        throw this.error('tnUnsupportedFormat%s%s', file, this.config.thumbnail.inputFormats)
+        throw this.error('tnUnsupportedFormat%s%s', file, images)
       }
-      const base = path.basename(file, ext)
+      const base = path.basename(file, `.${ext}`)
       fs.ensureDirSync(dir)
-      for (const s of size) {
+      for (const s of sizes) {
         const [w, h] = this.thumbnailSizes(s)
         if (w === 0 || h === 0) {
           if (silent) continue
-          throw this.error('tnInvalidSize%s%s', file, [...size, '<width>x<height>'])
+          throw this.error('tnInvalidSize%s%s', file, [...sizes, '<width>x<height>'])
         }
-        for (const to of format) {
-          const dest = `${dir}/${base}-${s}${to}`
+        for (const to of formats) {
+          const dest = `${dir}/${s}-${base}.${to}`
           try {
             await sharp(file)
               .resize(w, h, opts)
